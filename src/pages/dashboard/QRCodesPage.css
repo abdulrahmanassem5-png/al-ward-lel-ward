@@ -1,0 +1,250 @@
+.qrcodes-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.btn-print-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  background: var(--gold-gradient);
+  color: #0A0A0A;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-print-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.4);
+}
+
+.qr-generator-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .qr-generator-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.qr-controls-card {
+  padding: var(--space-xl);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.qr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qr-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.qr-select,
+.qr-input-field,
+.qr-textarea {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-subtle);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.92rem;
+  outline: none;
+}
+
+.qr-select:focus,
+.qr-input-field:focus,
+.qr-textarea:focus {
+  border-color: var(--gold-primary);
+}
+
+.qr-select option {
+  background: #1A1A1A;
+}
+
+.qr-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.theme-chips {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-chip {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.theme-chip.active {
+  background: rgba(212, 168, 83, 0.15);
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+  font-weight: 700;
+}
+
+/* Printable Card */
+.qr-preview-col {
+  display: flex;
+  justify-content: center;
+}
+
+.printable-gift-card {
+  width: 100%;
+  max-width: 380px;
+  background: #0D0D0D;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px var(--gold-glow);
+  position: relative;
+}
+
+.tag-border-frame {
+  border: 1px solid var(--gold-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-md);
+  background: radial-gradient(circle at 50% 20%, rgba(212, 168, 83, 0.06) 0%, transparent 80%);
+}
+
+.card-brand-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-brand-top .flower-icon {
+  font-size: 1.8rem;
+  margin-bottom: 2px;
+}
+
+.card-brand-top .brand-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--gold-light);
+}
+
+.card-brand-top .tagline {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.card-recipient-line {
+  font-size: 1.05rem;
+  color: #fff;
+  border-bottom: 1px dashed rgba(212, 168, 83, 0.3);
+  padding-bottom: 4px;
+  width: 100%;
+}
+
+.label-to {
+  color: var(--gold-light);
+  font-size: 0.85rem;
+  margin-inline-end: 6px;
+}
+
+.name-to {
+  font-weight: 700;
+}
+
+.card-message {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
+  max-width: 280px;
+}
+
+.card-sender-line {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+}
+
+.name-from {
+  color: var(--gold-light);
+  font-weight: 700;
+  margin-inline-start: 4px;
+}
+
+.card-qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.qr-box {
+  padding: 10px;
+  background: #000;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-gold);
+}
+
+.qr-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--gold-light);
+}
+
+.card-footer-mark {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+  width: 100%;
+}
+
+/* Print Media Query */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-card, #printable-card * {
+    visibility: visible;
+  }
+  #printable-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 320px;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}

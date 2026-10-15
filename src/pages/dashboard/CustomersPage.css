@@ -1,0 +1,150 @@
+.customers-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.btn-add-customer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  background: var(--gold-gradient);
+  color: #0A0A0A;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-customer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.4);
+}
+
+.cust-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-lg);
+}
+
+.cust-toolbar {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.cust-count-badge {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.cust-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+
+.cust-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
+}
+
+.cust-table th {
+  padding: 14px 18px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cust-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.9rem;
+}
+
+.c-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cust-full-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.vip-chip {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(212, 168, 83, 0.18);
+  border: 1px solid var(--border-gold);
+  color: var(--gold-light);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.c-contact-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.c-phone {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.c-email {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.c-orders-count {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.c-spent-cell {
+  font-weight: 800;
+  color: var(--gold-light);
+  font-size: 1rem;
+}
+
+.c-date-cell {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.btn-chat-cust {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.3);
+  color: #25D366;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-chat-cust:hover {
+  background: #25D366;
+  color: #0A0A0A;
+  transform: scale(1.05);
+}

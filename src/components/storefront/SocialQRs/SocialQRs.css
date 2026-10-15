@@ -1,0 +1,188 @@
+/* ══════════════════════════════════════════
+   Social Community QR Codes Section
+   Matches the luxury aesthetic from user design
+   ══════════════════════════════════════════ */
+
+.social-qrs-section {
+  position: relative;
+  padding: 80px 0;
+  background: radial-gradient(circle at 50% 20%, rgba(212, 168, 83, 0.04) 0%, transparent 70%);
+}
+
+.social-qrs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 36px;
+}
+
+@media (max-width: 1100px) {
+  .social-qrs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .social-qrs-grid {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Individual Card */
+.social-qr-card {
+  background: #15151A;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 30px 22px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+}
+
+.social-qr-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--brand-color, #D4A853), transparent);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.social-qr-card:hover {
+  transform: translateY(-7px);
+  border-color: rgba(212, 168, 83, 0.35);
+  box-shadow: 0 18px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 168, 83, 0.12);
+}
+
+.social-qr-card:hover::before {
+  opacity: 1;
+}
+
+/* Header Text */
+.social-qr-header {
+  width: 100%;
+  margin-bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.social-qr-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.social-qr-handle {
+  font-size: 0.85rem;
+  color: #9CA3AF;
+  font-weight: 500;
+  direction: ltr;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.social-qr-desc {
+  font-size: 0.82rem;
+  color: #A0A0A8;
+  line-height: 1.5;
+  margin: 4px 0 0;
+  min-height: 38px;
+}
+
+/* White QR Box Container */
+.social-qr-code-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: transform 0.25s ease;
+}
+
+.social-qr-code-wrapper:hover {
+  transform: scale(1.03);
+}
+
+.social-qr-white-box {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.social-qr-white-box svg {
+  display: block;
+}
+
+.qr-scan-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  color: #71717A;
+  margin-top: 8px;
+  transition: color 0.2s ease;
+}
+
+.social-qr-code-wrapper:hover .qr-scan-hint {
+  color: #D4A853;
+}
+
+/* Bottom Pill Button */
+.social-qr-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: #202028;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  margin-top: auto;
+}
+
+.social-qr-btn .ext-icon {
+  opacity: 0.5;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.social-qr-btn:hover {
+  background: var(--brand-color, #D4A853);
+  color: #FFFFFF;
+  border-color: var(--brand-color, #D4A853);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+.social-qr-btn:hover .ext-icon {
+  opacity: 1;
+  transform: translateX(-2px) translateY(-1px);
+}

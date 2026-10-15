@@ -1,0 +1,82 @@
+.loading-spinner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.spinner-ring {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  animation: spinPetals 2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.spinner-petal {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50% 50% 0 50%;
+  background: linear-gradient(135deg, var(--gold-light, #E8C87A), var(--gold-primary, #D4A853));
+  box-shadow: 0 0 10px rgba(212, 168, 83, 0.4);
+}
+
+.petal-1 {
+  top: 0;
+  left: 0;
+  transform: rotate(0deg);
+}
+
+.petal-2 {
+  top: 0;
+  right: 0;
+  transform: rotate(90deg);
+}
+
+.petal-3 {
+  bottom: 0;
+  right: 0;
+  transform: rotate(180deg);
+}
+
+.petal-4 {
+  bottom: 0;
+  left: 0;
+  transform: rotate(270deg);
+}
+
+.spinner-text {
+  color: var(--text-secondary, rgba(255, 255, 255, 0.65));
+  font-size: 0.95rem;
+}
+
+@keyframes spinPetals {
+  0% {
+    transform: rotate(0deg) scale(0.9);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(0.9);
+  }
+}
+
+.loading-spinner--sm .spinner-ring {
+  width: 28px;
+  height: 28px;
+}
+.loading-spinner--sm .spinner-petal {
+  width: 12px;
+  height: 12px;
+}
+.loading-spinner--lg .spinner-ring {
+  width: 64px;
+  height: 64px;
+}
+.loading-spinner--lg .spinner-petal {
+  width: 26px;
+  height: 26px;
+}

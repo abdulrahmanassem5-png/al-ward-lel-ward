@@ -1,0 +1,103 @@
+.toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 380px;
+  width: calc(100% - 4rem);
+  pointer-events: none;
+}
+
+[dir="rtl"] .toast-container {
+  right: auto;
+  left: 2rem;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-lg, 14px);
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease;
+}
+
+.toast--success {
+  border-left: 4px solid var(--success, #34D399);
+}
+[dir="rtl"] .toast--success {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 4px solid var(--success, #34D399);
+}
+
+.toast--error {
+  border-left: 4px solid var(--error, #F87171);
+}
+[dir="rtl"] .toast--error {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 4px solid var(--error, #F87171);
+}
+
+.toast--info {
+  border-left: 4px solid var(--gold-primary, #D4A853);
+}
+[dir="rtl"] .toast--info {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 4px solid var(--gold-primary, #D4A853);
+}
+
+.toast-icon.success { color: var(--success, #34D399); }
+.toast-icon.error { color: var(--error, #F87171); }
+.toast-icon.info { color: var(--gold-primary, #D4A853); }
+
+.toast-text {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #FFFFFF;
+}
+
+.toast-msg {
+  font-size: 0.85rem;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.65));
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, rgba(255, 255, 255, 0.4));
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.toast-close:hover {
+  color: #FFFFFF;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

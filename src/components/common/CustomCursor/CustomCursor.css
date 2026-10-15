@@ -1,0 +1,47 @@
+.custom-cursor-follower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  margin-top: -16px;
+  margin-left: -16px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(212, 168, 83, 0.4);
+  pointer-events: none;
+  z-index: 99999;
+  transition: width 0.25s ease, height 0.25s ease, margin 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-cursor-follower .cursor-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--gold-light);
+  box-shadow: 0 0 8px var(--gold-primary);
+  transition: transform 0.2s ease;
+}
+
+.custom-cursor-follower.hovered {
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  margin-left: -24px;
+  border-color: var(--gold-primary);
+  background-color: rgba(212, 168, 83, 0.08);
+  box-shadow: 0 0 15px var(--gold-glow);
+}
+
+.custom-cursor-follower.hovered .cursor-dot {
+  transform: scale(1.4);
+}
+
+@media (pointer: coarse) {
+  .custom-cursor-follower {
+    display: none !important;
+  }
+}

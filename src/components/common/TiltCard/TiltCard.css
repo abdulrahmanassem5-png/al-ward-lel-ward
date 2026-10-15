@@ -1,0 +1,25 @@
+.tilt-card-container {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+}
+
+.tilt-card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: inherit;
+  mix-blend-mode: overlay;
+  z-index: 10;
+  transition: opacity 0.2s ease;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  /* On touch devices, disable continuous tilt to conserve CPU/battery */
+  .tilt-card-container {
+    transform: none !important;
+  }
+}

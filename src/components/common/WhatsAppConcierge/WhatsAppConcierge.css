@@ -1,0 +1,184 @@
+.whatsapp-concierge {
+  position: fixed;
+  bottom: 28px;
+  inset-inline-end: 28px;
+  z-index: 9990;
+  font-family: var(--font-arabic);
+}
+
+/* Trigger Button */
+.concierge-trigger {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4), 0 0 16px rgba(37, 211, 102, 0.2);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.concierge-trigger:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 12px 30px rgba(37, 211, 102, 0.6), 0 0 25px rgba(37, 211, 102, 0.3);
+}
+
+.trigger-pulse-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid #25D366;
+  opacity: 0.8;
+  animation: conciergePulse 2.2s infinite ease-out;
+  pointer-events: none;
+}
+
+@keyframes conciergePulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+.trigger-online-dot {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 2px;
+  width: 14px;
+  height: 14px;
+  background: #22C55E;
+  border: 2px solid #0A0A0A;
+  border-radius: 50%;
+}
+
+/* Popover Card */
+.concierge-popover {
+  position: absolute;
+  bottom: 74px;
+  inset-inline-end: 0;
+  width: 320px;
+  background: rgba(18, 18, 22, 0.95);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 168, 83, 0.15);
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.concierge-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.concierge-avatar {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(212, 168, 83, 0.15);
+  border: 1px solid var(--gold-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.live-status-dot {
+  position: absolute;
+  bottom: 0;
+  inset-inline-end: 0;
+  width: 10px;
+  height: 10px;
+  background: #22C55E;
+  border-radius: 50%;
+  border: 2px solid #141418;
+}
+
+.concierge-meta {
+  flex: 1;
+}
+
+.concierge-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.concierge-status {
+  font-size: 0.72rem;
+  color: #34D399;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.concierge-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.concierge-close:hover {
+  color: #FFFFFF;
+}
+
+.concierge-body {
+  padding: 16px;
+}
+
+.concierge-bubble {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  position: relative;
+}
+
+.concierge-footer {
+  padding: 12px 16px 16px;
+}
+
+.concierge-send-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  border: none;
+  border-radius: var(--radius-full);
+  color: #FFFFFF;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  transition: all 0.25s ease;
+}
+
+.concierge-send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+}

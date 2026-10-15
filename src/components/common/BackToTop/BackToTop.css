@@ -1,0 +1,26 @@
+.back-to-top-btn {
+  position: fixed;
+  bottom: 28px;
+  inset-inline-start: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(18, 18, 24, 0.85);
+  border: 1px solid var(--border-gold);
+  color: var(--gold-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9980;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(12px);
+}
+
+.back-to-top-btn:hover {
+  background: var(--gold-primary);
+  color: #0A0A0A;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(212, 168, 83, 0.4);
+}

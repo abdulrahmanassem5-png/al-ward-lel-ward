@@ -1,0 +1,40 @@
+.floating-particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.floating-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(1px);
+  animation: floatUp infinite ease-in-out alternate;
+}
+
+.floating-particle.gold {
+  background: radial-gradient(circle, var(--gold-light, #E8C87A) 0%, var(--gold-primary, #D4A853) 70%, transparent 100%);
+  box-shadow: 0 0 10px rgba(212, 168, 83, 0.4);
+}
+
+.floating-particle.rose {
+  background: radial-gradient(circle, var(--rose-light, #E8899E) 0%, var(--rose-primary, #C4546D) 70%, transparent 100%);
+  box-shadow: 0 0 8px rgba(196, 84, 109, 0.35);
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-40px) translateX(25px) rotate(90deg);
+  }
+  100% {
+    transform: translateY(-80px) translateX(-15px) rotate(180deg);
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "about": "About",
+    "contact": "Contact",
+    "cart": "Cart",
+    "login": "Login",
+    "dashboard": "Dashboard"
+  },
+  "hero": {
+    "tagline": "We craft memories from flowers",
+    "title": "Al-Ward Lel-Ward",
+    "subtitle": "Unique handmade bouquets, crafted with love for every occasion",
+    "cta_shop": "Browse Products",
+    "cta_order": "Order Now"
+  },
+  "featured": {
+    "title": "Our Latest Creations",
+    "subtitle": "Bouquets carefully designed for every occasion",
+    "view_all": "View All"
+  },
+  "categories": {
+    "title": "Browse by Occasion",
+    "subtitle": "Choose the occasion and find the perfect bouquet",
+    "wedding": "Weddings",
+    "birthday": "Birthdays",
+    "love": "Love & Appreciation",
+    "occasions": "Special Occasions",
+    "decor": "Home Décor",
+    "gifts": "Gifts"
+  },
+  "howItWorks": {
+    "title": "How We Craft Your Bouquets",
+    "step1_title": "Choose a Bouquet",
+    "step1_desc": "Browse our collection and pick what suits you",
+    "step2_title": "Customize Details",
+    "step2_desc": "Add your personal touch and notes",
+    "step3_title": "Receive Your Bouquet",
+    "step3_desc": "We deliver to your door or pick up at our shop"
+  },
+  "testimonials": {
+    "title": "What Our Customers Say",
+    "subtitle": "Real reviews from happy customers"
+  },
+  "cta": {
+    "title": "Ready to create a memory with flowers?",
+    "subtitle": "Contact us now and get the bouquet of your dreams",
+    "whatsapp": "Contact via WhatsApp"
+  },
+  "product": {
+    "add_to_cart": "Add to Cart",
+    "order_whatsapp": "Order via WhatsApp",
+    "qr_code": "QR Code",
+    "price": "Price",
+    "description": "Description",
+    "components": "Components",
+    "size": "Size",
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large",
+    "quantity": "Quantity",
+    "similar": "Similar Products",
+    "reviews": "Reviews",
+    "in_stock": "In Stock",
+    "out_of_stock": "Out of Stock",
+    "sar": "SAR"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "total": "Total",
+    "checkout": "Checkout",
+    "continue": "Continue Shopping",
+    "remove": "Remove"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "address": "Address",
+    "notes": "Notes",
+    "payment": "Payment Method",
+    "cash": "Cash on Delivery",
+    "card": "Credit Card",
+    "place_order": "Place Order",
+    "success": "Your order has been confirmed!"
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Our Story with Flowers",
+    "story": "We started our journey from a genuine passion for flowers and beauty. We believe every bouquet carries a story and a message, and we strive to make every occasion more beautiful with a touch of nature."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We'd love to hear from you anytime",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send",
+    "phone_label": "Phone",
+    "email_label": "Email",
+    "address_label": "Address"
+  },
+  "footer": {
+    "tagline": "We craft memories from flowers",
+    "quick_links": "Quick Links",
+    "contact_us": "Contact Us",
+    "follow_us": "Follow Us",
+    "copyright": "© 2026 Al-Ward Lel-Ward. All rights reserved"
+  },
+  "dashboard": {
+    "greeting": "Good morning",
+    "summary": "Here's your daily summary",
+    "revenue": "Today's Revenue",
+    "new_orders": "New Orders",
+    "active_products": "Active Products",
+    "new_customers": "New Customers",
+    "recent_orders": "Recent Orders",
+    "alerts": "Alerts",
+    "low_stock": "Low Stock",
+    "sales_chart": "Sales",
+    "category_chart": "Category Distribution"
+  },
+  "orders": {
+    "title": "Order Management",
+    "new_order": "New Order",
+    "all": "All",
+    "new": "New",
+    "processing": "Processing",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "search": "Search...",
+    "customer": "Customer",
+    "product_col": "Product",
+    "status": "Status",
+    "amount": "Amount",
+    "date": "Date",
+    "details": "Order Details",
+    "contact_whatsapp": "Contact WhatsApp",
+    "print": "Print"
+  },
+  "inventory": {
+    "title": "Inventory Management",
+    "add_material": "New Material",
+    "total": "Total Materials",
+    "low": "Low Stock",
+    "out": "Out of Stock",
+    "material": "Material",
+    "category": "Category",
+    "available": "Available",
+    "minimum": "Minimum",
+    "state": "Status",
+    "export": "Export Excel",
+    "auto_order": "Auto Reorder"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "no_results": "No results found",
+    "confirm": "Confirm",
+    "back": "Back"
+  }
+}
