@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
-import { Lock, Mail, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ArrowLeft } from 'lucide-react';
 import './LoginPage.css';
 
 export default function LoginPage() {
@@ -17,8 +17,8 @@ export default function LoginPage() {
   const ArrowIcon = isAr ? ArrowLeft : ArrowRight;
   const redirectTarget = location.state?.from || '/dashboard';
 
-  const [email, setEmail] = useState('admin@alward.com');
-  const [password, setPassword] = useState('ward2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -31,20 +31,6 @@ export default function LoginPage() {
       navigate(redirectTarget, { replace: true });
     } catch (err) {
       showError(err.message || (isAr ? 'بيانات الدخول غير صحيحة' : 'Invalid login credentials'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuickDemoAdmin = async () => {
-    setLoading(true);
-    try {
-      const currentPass = localStorage.getItem('alward_admin_password') || 'ward2026';
-      await login('admin@alward.com', currentPass);
-      showSuccess(isAr ? 'تم تسجيل الدخول السريع كمدير المتجر 👑' : 'Quick Admin Demo login successful 👑');
-      navigate(redirectTarget, { replace: true });
-    } catch (err) {
-      showError(err.message || 'Error logging in');
     } finally {
       setLoading(false);
     }
@@ -72,6 +58,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@alward.com"
+                autoComplete="email"
               />
             </div>
           </div>
@@ -86,6 +73,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                autoComplete="current-password"
               />
             </div>
           </div>
@@ -95,15 +83,6 @@ export default function LoginPage() {
             <ArrowIcon size={16} />
           </button>
         </form>
-
-        <div className="quick-demo-divider">
-          <span>{isAr ? 'أو الوصول الفوري' : 'Or Quick Access'}</span>
-        </div>
-
-        <button onClick={handleQuickDemoAdmin} className="btn-quick-admin">
-          <Sparkles size={18} color="#D4A853" />
-          <span>{isAr ? 'الدخول كمدير المتجر (تجربة فورية)' : 'Enter as Admin (Instant Demo)'}</span>
-        </button>
 
         <div className="login-footer-links">
           <Link to="/" className="link-back-store">
@@ -115,3 +94,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
