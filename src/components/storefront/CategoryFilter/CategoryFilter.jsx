@@ -1,7 +1,16 @@
 import { useTranslation } from 'react-i18next';
 import { CATEGORIES } from '../../../config/constants.js';
-import { Sparkles } from 'lucide-react';
+import { Crown, Sparkles, Heart, MoonStar, Home, Gift, LayoutGrid } from 'lucide-react';
 import './CategoryFilter.css';
+
+const ICON_MAP = {
+  Crown,
+  Sparkles,
+  Heart,
+  MoonStar,
+  Home,
+  Gift,
+};
 
 export default function CategoryFilter({ activeCategory, onSelectCategory }) {
   const { i18n } = useTranslation();
@@ -9,7 +18,7 @@ export default function CategoryFilter({ activeCategory, onSelectCategory }) {
 
   const allOption = {
     id: 'all',
-    icon: '✨',
+    iconName: 'all',
     name_ar: 'الكل',
     name_en: 'All Bouquets',
   };
@@ -22,6 +31,7 @@ export default function CategoryFilter({ activeCategory, onSelectCategory }) {
         {categories.map((cat) => {
           const isActive = activeCategory === cat.id;
           const name = isAr ? cat.name_ar : cat.name_en;
+          const IconComponent = cat.id === 'all' ? LayoutGrid : (ICON_MAP[cat.iconName] || Sparkles);
 
           return (
             <button
@@ -29,7 +39,9 @@ export default function CategoryFilter({ activeCategory, onSelectCategory }) {
               onClick={() => onSelectCategory(cat.id)}
               className={`cat-pill ${isActive ? 'active' : ''}`}
             >
-              <span className="cat-icon">{cat.icon}</span>
+              <span className="cat-icon">
+                <IconComponent size={16} strokeWidth={1.4} />
+              </span>
               <span className="cat-name">{name}</span>
               {isActive && <span className="cat-active-indicator" />}
             </button>
@@ -39,3 +51,4 @@ export default function CategoryFilter({ activeCategory, onSelectCategory }) {
     </div>
   );
 }
+

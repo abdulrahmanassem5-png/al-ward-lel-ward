@@ -1,188 +1,406 @@
-/* ══════════════════════════════════════════
-   Social Community QR Codes Section
-   Matches the luxury aesthetic from user design
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   Royal VIP Concierge & Social Pass Cards
+   Ultra-Luxury Editorial Dark Obsidian & Filigree Gold Theme
+   ══════════════════════════════════════════════════════════ */
 
 .social-qrs-section {
   position: relative;
-  padding: 80px 0;
-  background: radial-gradient(circle at 50% 20%, rgba(212, 168, 83, 0.04) 0%, transparent 70%);
+  padding: 90px 0 100px;
+  background: radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.08) 0%, rgba(10, 7, 8, 0.5) 45%, transparent 75%);
 }
 
+.social-ambient-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at top, rgba(212, 175, 55, 0.07) 0%, transparent 60%);
+}
+
+/* Header Styling */
+.social-header-block {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 52px;
+}
+
+.social-vip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #E5C158;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.social-main-title {
+  font-family: var(--font-headline, 'Alexandria', sans-serif);
+  font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  color: #FFF6D6;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0 0 16px;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+}
+
+.social-main-desc {
+  font-family: var(--font-body, 'Tajawal', sans-serif);
+  color: #C4B7A6;
+  font-size: clamp(0.92rem, 1.2vw, 1.05rem);
+  line-height: 1.7;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* Grid Layout */
 .social-qrs-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
-  margin-top: 36px;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1150px) {
   .social-qrs-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .social-qrs-grid {
     grid-template-columns: 1fr;
-    max-width: 360px;
+    max-width: 380px;
     margin-left: auto;
     margin-right: auto;
   }
 }
 
-/* Individual Card */
+/* ── Obsidian Glass & Gold Filigree Card ── */
 .social-qr-card {
-  background: #15151A;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 30px 22px 26px;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
+  background: linear-gradient(180deg, rgba(22, 17, 18, 0.92) 0%, rgba(16, 12, 13, 0.96) 50%, rgba(10, 7, 8, 0.98) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 28px;
+  padding: 30px 22px 26px;
+  box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(212, 175, 55, 0.15);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
-}
-
-.social-qr-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--brand-color, #D4A853), transparent);
-  opacity: 0;
-  transition: opacity 0.35s ease;
 }
 
 .social-qr-card:hover {
-  transform: translateY(-7px);
-  border-color: rgba(212, 168, 83, 0.35);
-  box-shadow: 0 18px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 168, 83, 0.12);
+  transform: translateY(-8px);
+  border-color: rgba(212, 175, 55, 0.7);
+  box-shadow: 0 25px 60px -15px rgba(212, 175, 55, 0.22), 0 0 35px rgba(212, 175, 55, 0.12), inset 0 1px 0 rgba(212, 175, 55, 0.4);
 }
 
-.social-qr-card:hover::before {
+/* Top Subtle Golden Gradient Line */
+.top-gold-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 2px;
+  width: 50%;
+  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+  opacity: 0.6;
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.social-qr-card:hover .top-gold-line {
+  opacity: 1;
+  width: 75%;
+}
+
+/* Subtle Hover Ambient Glow */
+.card-ambient-hover-glow {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  background: rgba(212, 175, 55, 0.12);
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.social-qr-card:hover .card-ambient-hover-glow {
   opacity: 1;
 }
 
-/* Header Text */
-.social-qr-header {
-  width: 100%;
-  margin-bottom: 22px;
+/* Platform Emblem Medallion */
+.platform-emblem-medallion {
+  width: 50px;
+  height: 50px;
+  border-radius: 18px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.15), inset 0 0 8px rgba(212, 175, 55, 0.08);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  color: #E5C158;
+  margin-bottom: 16px;
+  transition: all 0.35s ease;
 }
 
+.social-qr-card:hover .platform-emblem-medallion {
+  transform: scale(1.1);
+  border-color: rgba(212, 175, 55, 0.6);
+  background: rgba(212, 175, 55, 0.18);
+  box-shadow: 0 0 22px rgba(212, 175, 55, 0.3);
+}
+
+.platform-svg {
+  display: block;
+}
+
+/* Platform Title */
 .social-qr-title {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #FFFFFF;
+  font-family: var(--font-headline, 'Alexandria', sans-serif);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #FFF6D6;
   letter-spacing: -0.01em;
-  margin: 0;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-.social-qr-handle {
-  font-size: 0.85rem;
-  color: #9CA3AF;
-  font-weight: 500;
-  direction: ltr;
+/* Handle Monospace Gold Capsule */
+.handle-capsule-wrapper {
+  margin-bottom: 10px;
+}
+
+.handle-capsule {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 2px 10px;
-  border-radius: 12px;
+  background: #1E1714;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: #E5C158;
+  font-size: 0.76rem;
+  font-weight: 500;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  direction: ltr;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* Card Description */
 .social-qr-desc {
   font-size: 0.82rem;
-  color: #A0A0A8;
-  line-height: 1.5;
-  margin: 4px 0 0;
+  color: #D1C5B4;
+  line-height: 1.55;
   min-height: 38px;
+  margin: 4px 0 20px 0;
+  max-width: 250px;
 }
 
-/* White QR Box Container */
+/* ── Royal Gold Scanner Frame ── */
 .social-qr-code-wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-decoration: none;
   cursor: pointer;
   margin-bottom: 24px;
-  transition: transform 0.25s ease;
+  transition: transform 0.35s ease;
 }
 
 .social-qr-code-wrapper:hover {
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
-.social-qr-white-box {
-  background: #FFFFFF;
+.qr-scanner-frame {
+  position: relative;
+  padding: 10px;
+  border-radius: 22px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(13, 9, 11, 0.95);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), inset 0 0 12px rgba(212, 175, 55, 0.06);
+  transition: all 0.4s ease;
+}
+
+.social-qr-card:hover .qr-scanner-frame {
+  border-color: rgba(212, 175, 55, 0.75);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 175, 55, 0.15);
+}
+
+/* 4 Golden Camera Corner Brackets */
+.corner-bracket {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: #E5C158;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 4;
+}
+
+.corner-tr {
+  top: -2px;
+  right: -2px;
+  border-top: 2.5px solid #E5C158;
+  border-right: 2.5px solid #E5C158;
+  border-top-right-radius: 6px;
+}
+
+.corner-tl {
+  top: -2px;
+  left: -2px;
+  border-top: 2.5px solid #E5C158;
+  border-left: 2.5px solid #E5C158;
+  border-top-left-radius: 6px;
+}
+
+.corner-br {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 2.5px solid #E5C158;
+  border-right: 2.5px solid #E5C158;
+  border-bottom-right-radius: 6px;
+}
+
+.corner-bl {
+  bottom: -2px;
+  left: -2px;
+  border-bottom: 2.5px solid #E5C158;
+  border-left: 2.5px solid #E5C158;
+  border-bottom-left-radius: 6px;
+}
+
+.social-qr-card:hover .corner-bracket {
+  border-color: #FFF2A8;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.8));
+}
+
+/* Warm Papyrus / Ivory QR Box */
+.qr-papyrus-box {
+  position: relative;
+  background: #F6EFE0;
+  padding: 12px;
   border-radius: 16px;
-  padding: 14px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.35);
+  filter: sepia(0.22) contrast(1.15);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.social-qr-white-box svg {
+.qr-papyrus-box svg {
   display: block;
 }
 
+/* Laser Scan Line */
+.laser-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.5) 20%, #FFF4BD 50%, rgba(212, 175, 55, 0.5) 80%, transparent 100%);
+  box-shadow: 0 0 10px #D4AF37, 0 0 18px rgba(212, 175, 55, 0.8);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.social-qr-card:hover .laser-scan-line {
+  opacity: 1;
+  animation: royalLaserScan 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes royalLaserScan {
+  0% {
+    top: 5%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 95%;
+    opacity: 0;
+  }
+}
+
+/* Scan Hint Tag */
 .qr-scan-hint {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 0.72rem;
-  color: #71717A;
-  margin-top: 8px;
-  transition: color 0.2s ease;
+  color: #C4B7A6;
+  margin-top: 10px;
+  transition: color 0.25s ease;
 }
 
-.social-qr-code-wrapper:hover .qr-scan-hint {
-  color: #D4A853;
+.social-qr-card:hover .qr-scan-hint {
+  color: #E5C158;
 }
 
-/* Bottom Pill Button */
-.social-qr-btn {
+/* ── Luxury CTA Button ── */
+.luxury-cta-btn {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 18px;
-  background: #202028;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 9999px;
-  color: #FFFFFF;
-  font-size: 0.92rem;
-  font-weight: 600;
+  padding: 13px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #211A16 0%, #2A2019 50%, #211A16 100%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #F3E5AB;
+  font-size: 0.88rem;
+  font-weight: 700;
   text-decoration: none;
-  transition: all 0.25s ease;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  transition: all 0.35s ease;
   margin-top: auto;
+  cursor: pointer;
 }
 
-.social-qr-btn .ext-icon {
-  opacity: 0.5;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.social-qr-btn:hover {
-  background: var(--brand-color, #D4A853);
-  color: #FFFFFF;
-  border-color: var(--brand-color, #D4A853);
+.luxury-cta-btn:hover {
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+  color: #090707;
+  border-color: transparent;
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
 }
 
-.social-qr-btn:hover .ext-icon {
-  opacity: 1;
-  transform: translateX(-2px) translateY(-1px);
+.luxury-cta-btn .btn-arrow {
+  color: #D4AF37;
+  transition: all 0.3s ease;
+}
+
+.luxury-cta-btn:hover .btn-arrow {
+  color: #090707;
+  transform: translate(-3px, -2px);
+}
+
+[dir="ltr"] .luxury-cta-btn:hover .btn-arrow {
+  transform: translate(3px, -2px);
 }

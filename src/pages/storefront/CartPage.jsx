@@ -52,30 +52,30 @@ export default function CartPage() {
 
   const handleWhatsAppCartOrder = () => {
     let message = isAr
-      ? `مرحباً، أود إرسال طلب جديد من سلة متجر الورد للورد 🌹:\n\n`
-      : `Hello, I'd like to place an order from my Al-Ward shopping cart 🌹:\n\n`;
+      ? `مرحباً بكم دار الورد للورد 🌹✨\nأود اعتماد موكب إهداء ملكي من حقيبة الهدايا:\n━━━━━━━━━━━━━━━━━━\n`
+      : `Hello Al-Ward Lel-Ward Atelier 🌹✨\nI would like to place an order from my Royal Gift Bag:\n━━━━━━━━━━━━━━━━━━\n`;
 
     items.forEach((item, idx) => {
       const name = isAr ? item.name_ar : item.name_en;
       message += `${idx + 1}. ${name} (${item.quantity}x) - ${item.price * item.quantity} ${currencySymbol}\n`;
       if (item.selectedSize) {
-        message += `   • الحجم: ${item.selectedSize}\n`;
+        message += `   • فئة الحجم: ${item.selectedSize}\n`;
       }
       if (item.giftNote) {
-        message += `   • الإهداء: "${item.giftNote}"\n`;
+        message += `   • بطاقة الإهداء الملكية: «${item.giftNote}»\n`;
       }
       if (item.includeQR) {
-        message += `   • باركود تفاعلي: نعم\n`;
+        message += `   • باركود صوتي/مرئي تفاعلي: نعم\n`;
       }
     });
 
-    message += `\nالمجموع الفرعي: ${totalPrice} ${currencySymbol}\n`;
+    message += `━━━━━━━━━━━━━━━━━━\nالمجموع الفرعي: ${totalPrice} ${currencySymbol}\n`;
     if (discountAmount > 0) {
-      message += `الخصم: -${discountAmount} ${currencySymbol} (كود: ${appliedPromo})\n`;
+      message += `الخصم الملكي: -${discountAmount} ${currencySymbol} (كود: ${appliedPromo})\n`;
     }
-    message += `التوصيل: ${shippingFee === 0 ? (isAr ? 'مجاني' : 'Free') : `${shippingFee} ${currencySymbol}`}\n`;
-    message += `المجموع النهائي: ${finalPayable} ${currencySymbol}\n\n`;
-    message += `أرجو تأكيد الطلب وتحديد موعد التوصيل، شكراً لكم!`;
+    message += `التوصيل: ${shippingFee === 0 ? (isAr ? 'موكب مبرّد مجاني' : 'Free Climate-Controlled') : `${shippingFee} ${currencySymbol}`}\n`;
+    message += `إجمالي القيمة الفاخرة: ${finalPayable} ${currencySymbol}\n\n`;
+    message += `أرجو التكرم باعتماد التجهيز وتأكيد موعد الموكب، شاكرين لكم حسن ذوقكم!`;
 
     window.open(`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -84,16 +84,16 @@ export default function CartPage() {
     return (
       <div className="cart-empty-page container-wide">
         <div className="empty-cart-card glass">
-          <div className="empty-cart-icon">🛒</div>
-          <h2>{isAr ? 'سلتك فارغة حالياً' : 'Your Shopping Cart is Empty'}</h2>
-          <p>
+          <div className="empty-cart-icon">✨🌹</div>
+          <h2 className="empty-title">{isAr ? 'حقيبتك بانتظار أولى لمساتك الفاخرة' : 'Your Royal Gift Bag is Awaiting Your Touch'}</h2>
+          <p className="font-poetic" style={{ fontSize: '1.15rem', color: 'var(--gold-light)' }}>
             {isAr
-              ? 'لم تقم بإضافة أي بوكيه بعد. استكشف تشكيلاتنا الفاخرة واختر ما يعبر عن مشاعرك.'
-              : 'You have not added any bouquets yet. Explore our luxury collections today.'}
+              ? '«لم تودع في حقيبتك تحفة نباتية بعد .. استكشف تشكيلاتنا الملكية واختر ما يعبر عن أسمى عهودك»'
+              : '«Explore our curated royal masterpieces and select the creation that speaks to the heart»'}
           </p>
           <Link to="/shop" className="btn-explore-shop">
             <ShoppingBag size={18} />
-            <span>{isAr ? 'تصفح المتجر الآن' : 'Explore Bouquets'}</span>
+            <span>{isAr ? 'استكشف الروائع الملكية' : 'Explore Masterpieces'}</span>
           </Link>
         </div>
       </div>
@@ -104,10 +104,10 @@ export default function CartPage() {
     <div className="cart-page container-wide">
       <div className="cart-header">
         <h1 className="cart-title">
-          {isAr ? 'سلة المشتريات' : 'Shopping Cart'}
+          {isAr ? 'حقيبة الهدايا الملكية' : 'Royal Gift Bag'}
         </h1>
         <span className="cart-items-count">
-          ({totalItems} {isAr ? 'عناصر' : 'items'})
+          ({totalItems} {isAr ? 'تحف مختارة' : 'creations'})
         </span>
       </div>
 
@@ -194,11 +194,11 @@ export default function CartPage() {
           <div className="cart-bottom-actions">
             <Link to="/shop" className="btn-continue-shopping">
               <ArrowIcon size={16} />
-              <span>{isAr ? 'متابعة التسوق' : 'Continue Shopping'}</span>
+              <span>{isAr ? 'مواصلة استكشاف الروائع' : 'Continue Exploring'}</span>
             </Link>
             <button onClick={clearCart} className="btn-clear-cart">
               <Trash2 size={16} />
-              <span>{isAr ? 'إفراغ السلة' : 'Clear Cart'}</span>
+              <span>{isAr ? 'إفراغ الحقيبة' : 'Clear Bag'}</span>
             </button>
           </div>
         </div>
@@ -206,7 +206,7 @@ export default function CartPage() {
         {/* Order Summary & Checkout */}
         <div className="cart-summary-col">
           <div className="cart-summary-card glass">
-            <h2 className="summary-title">{isAr ? 'ملخص الطلب' : 'Order Summary'}</h2>
+            <h2 className="summary-title">{isAr ? 'ملخص موكب الإهداء' : 'Order Summary'}</h2>
 
             {/* Promo Code Input */}
             <div className="promo-box">
@@ -250,7 +250,7 @@ export default function CartPage() {
                 <span>{isAr ? 'رسوم التوصيل' : 'Delivery Fee'}</span>
                 <span>
                   {shippingFee === 0 ? (
-                    <span className="free-shipping">{isAr ? 'مجاني (للطلبات +300 ج.م)' : 'Free (+300 EGP)'}</span>
+                    <span className="free-shipping">{isAr ? 'موكب مبرّد مجاني (للطلبات +300 ج.م)' : 'Free Climate-Controlled (+300 EGP)'}</span>
                   ) : (
                     `${shippingFee} ${currencySymbol}`
                   )}
@@ -258,7 +258,7 @@ export default function CartPage() {
               </div>
 
               <div className="summary-total-row">
-                <span>{isAr ? 'المجموع النهائي' : 'Total'}</span>
+                <span>{isAr ? 'إجمالي القيمة الفاخرة' : 'Total'}</span>
                 <span className="total-num">
                   {finalPayable} <small>{currencySymbol}</small>
                 </span>
@@ -272,20 +272,20 @@ export default function CartPage() {
                 className="btn-checkout-flow"
               >
                 <CreditCard size={18} />
-                <span>{isAr ? 'متابعة الدفع والتوصيل' : 'Proceed to Checkout'}</span>
+                <span>{isAr ? 'المتابعة لإتمام الإهداء الملكي' : 'Proceed to Royal Checkout'}</span>
                 <ArrowIcon size={16} />
               </button>
 
               <button onClick={handleWhatsAppCartOrder} className="btn-whatsapp-cart">
                 <MessageCircle size={20} />
-                <span>{isAr ? 'طلب كامل السلة عبر واتساب' : 'Order via WhatsApp'}</span>
+                <span>{isAr ? 'اعتماد موكب الحقيبة عبر واتساب' : 'Order via WhatsApp'}</span>
               </button>
             </div>
 
             <div className="summary-perks">
               <div className="perk-line">
                 <ShieldCheck size={16} color="#D4A853" />
-                <span>{isAr ? 'دفع آمن وتأكيد فوري من المنسق' : 'Secure and verified coordination'}</span>
+                <span>{isAr ? 'سداد موثوق وتأكيد فوري من مستشار التنسيق الملكي' : 'Secure and verified royal coordination'}</span>
               </div>
             </div>
           </div>

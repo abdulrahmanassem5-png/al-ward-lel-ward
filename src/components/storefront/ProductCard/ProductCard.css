@@ -3,18 +3,45 @@
   flex-direction: column;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  transition: all 0.4s var(--ease-spring);
+  background: linear-gradient(160deg, rgba(24, 24, 34, 0.7) 0%, rgba(12, 12, 18, 0.88) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-gold);
+  transition: all 0.45s var(--ease-spring);
   position: relative;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55);
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-gold-highlight), transparent);
+  opacity: 0.35;
+  transition: opacity 0.35s ease;
+  z-index: 1;
+}
+
+.product-card:hover::before {
+  opacity: 1;
 }
 
 .product-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--border-gold);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 25px var(--gold-glow);
+  transform: translateY(-8px);
+  border-color: var(--border-gold-highlight);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.75), 0 0 35px var(--gold-glow);
+}
+
+.card-sensory-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+  margin-bottom: var(--space-xs);
 }
 
 .card-image-wrap {
@@ -110,6 +137,22 @@
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
+/* Live Countdown Deal Badge */
+.countdown-live-badge {
+  top: 12px;
+  inset-inline-end: 12px;
+  inset-inline-start: auto;
+  background: linear-gradient(135deg, rgba(185, 28, 28, 0.9) 0%, rgba(127, 29, 29, 0.95) 100%);
+  border: 1px solid rgba(243, 231, 196, 0.5);
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-headline);
+  font-weight: 700;
+  animation: countdownPulse 2s infinite ease-in-out;
+}
+
 .card-content {
   padding: var(--space-lg);
   display: flex;
@@ -149,6 +192,16 @@
   gap: 5px;
 }
 
+.stock-status.low-stock {
+  color: var(--warning);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.stock-status.out-of-stock {
+  color: var(--error);
+  background: rgba(248, 113, 113, 0.1);
+}
+
 .stock-status .pulse-dot {
   width: 6px;
   height: 6px;
@@ -156,6 +209,23 @@
   background: #10B981;
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
   animation: pulseDot 2s infinite ease-in-out;
+}
+
+.stock-status .pulse-dot-amber {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FBBF24;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
+  animation: pulseDot 1.5s infinite ease-in-out;
+}
+
+.stock-status .pulse-dot-red {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F87171;
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.8);
 }
 
 @keyframes pulseDot {
@@ -170,10 +240,12 @@
 }
 
 .product-title {
+  font-family: var(--font-headline);
   font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: var(--space-xs);
   line-height: 1.35;
+  letter-spacing: -0.3px;
 }
 
 .product-title a {
@@ -300,3 +372,11 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(212, 168, 83, 0.35);
 }
+
+.action-btn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+  pointer-events: none;
+}
+

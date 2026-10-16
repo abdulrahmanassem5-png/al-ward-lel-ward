@@ -14,7 +14,9 @@ export default function Footer() {
           {/* Brand */}
           <div className="footer-brand">
             <div className="footer-logo">
-              <span className="footer-logo-icon">🌹</span>
+              <div className="footer-logo-badge">
+                <img src="/images/logo.jpg" alt="الورد للورد" className="footer-logo-img" />
+              </div>
               <span className="footer-logo-name">{isAr ? STORE_INFO.name_ar : STORE_INFO.name_en}</span>
             </div>
             <p className="footer-tagline">{t('footer.tagline')}</p>

@@ -1,0 +1,13 @@
+# Robots.txt for Al-Ward Lel-Ward (الورد للورد)
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /cart
+Disallow: /checkout
+
+# Sitemap Index
+Sitemap: https://el-ward-ll-ward-store.vercel.app/sitemap.xml

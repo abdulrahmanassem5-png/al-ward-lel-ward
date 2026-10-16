@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { STORE_INFO } from '../../config/constants.js';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import SocialQRs from '../../components/storefront/SocialQRs/SocialQRs.jsx';
+import SEO from '../../components/SEO.tsx';
 import { Phone, Mail, MapPin, MessageCircle, Send, Clock, Sparkles } from 'lucide-react';
 import './ContactPage.css';
 
@@ -34,6 +35,15 @@ export default function ContactPage() {
 
   return (
     <div className="contact-page container-wide">
+      <SEO
+        title={isAr ? 'الكونسيرج الملكي والتواصل' : 'Royal Concierge & Contact'}
+        description={
+          isAr
+            ? 'تواصل مع مستشاري تنسيق الزهور الملكية وفريق خدمة عملاء دار الورد للورد عبر واتساب والهاتف المباشر للاستشارات وتفصيل البوكيهات الخاصة.'
+            : 'Connect with Al-Ward Lel-Ward royal concierge and master florists via WhatsApp and direct lines for bespoke floral inquiries.'
+        }
+        canonicalUrl="https://el-ward-ll-ward-store.vercel.app/contact"
+      />
       <div className="contact-header">
         <span className="contact-badge">
           <Sparkles size={14} /> {isAr ? 'يسعدنا تواصلكم' : 'Get In Touch'}

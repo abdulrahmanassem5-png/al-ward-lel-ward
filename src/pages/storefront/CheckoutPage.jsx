@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { CURRENCY, STORE_INFO } from '../../config/constants.js';
+import { deductMaterialsForOrder } from '../../utils/recipeInventoryManager.js';
 import confetti from 'canvas-confetti';
 import {
   CheckCircle,
@@ -103,6 +104,13 @@ export default function CheckoutPage() {
       payment_method: formData.paymentMethod,
     };
 
+    // Deduct raw materials from inventory and calculate exact financials
+    try {
+      deductMaterialsForOrder(newOrderRecord);
+    } catch (e) {
+      console.error('Error auto-deducting raw materials:', e);
+    }
+
     const existingOrders = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
     localStorage.setItem('al_ward_orders', JSON.stringify([newOrderRecord, ...existingOrders]));
 
@@ -116,28 +124,46 @@ export default function CheckoutPage() {
 
     setOrderSubmitted(true);
     clearCart();
-    showSuccess(isAr ? 'تم استلام طلبك بنجاح! 🌹' : 'Order placed successfully! 🌹');
+    showSuccess(isAr ? 'تم اعتماد موكب طلبك الملكي بنجاح! 🌹' : 'Royal order placed successfully! 🌹');
   };
 
   const handleWhatsAppConfirmation = () => {
     let message = isAr
-      ? `مرحباً، تم تأكيد الطلب رقم (${generatedOrderNumber}) عبر المتجر:\n` +
-        `• العميل: ${formData.senderName} (${formData.senderPhone})\n` +
-        `• العنوان: ${formData.city} - ${formData.district}\n` +
-        `• الإجمالي: ${finalPayable} ${currencySymbol}\n` +
-        `• طريقة الدفع: ${formData.paymentMethod}\n`
-      : `Hello, order placed (#${generatedOrderNumber}) on the store:\n` +
-        `• Customer: ${formData.senderName} (${formData.senderPhone})\n` +
-        `• Address: ${formData.city} - ${formData.district}\n` +
-        `• Total: ${finalPayable} ${currencySymbol}\n`;
+      ? `تحية طيبة تعبق بشذا الورد والريحان، دار «الورد للورد» الملكية 🌹✨\n` +
+        `تم اعتماد موكب إهداء ملكي عبر المتجر برقم المرجع (#${generatedOrderNumber}):\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `👑 بيانات موكب الإهداء:\n` +
+        `• صاحب الإهداء: ${formData.senderName} (${formData.senderPhone})\n` +
+        `• وجهة التسليم: ${formData.city} - ${formData.district}\n` +
+        `• موعد الموكب المفضل: ${formData.deliveryDate || 'اليوم'} (${formData.deliveryTime})\n` +
+        `• القيمة الإجمالية الفاخرة: ${finalPayable} ${currencySymbol}\n` +
+        `• وسيلة السداد: ${formData.paymentMethod}\n`
+      : `Greetings with the essence of fresh blooms, Al-Ward Lel-Ward Royal Atelier 🌹✨\n` +
+        `Royal bouquet dedication confirmed (#${generatedOrderNumber}):\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `👑 Royal Dedication Details:\n` +
+        `• Client: ${formData.senderName} (${formData.senderPhone})\n` +
+        `• Delivery Destination: ${formData.city} - ${formData.district}\n` +
+        `• Preferred Schedule: ${formData.deliveryDate || 'Today'} (${formData.deliveryTime})\n` +
+        `• Total Value: ${finalPayable} ${currencySymbol}\n` +
+        `• Payment Method: ${formData.paymentMethod}\n`;
 
     if (formData.isGift) {
       message += isAr
-        ? `• هدية للمستلم: ${formData.recipientName} (${formData.recipientPhone})\n`
-        : `• Gift for: ${formData.recipientName} (${formData.recipientPhone})\n`;
+        ? `• إهداء خاص ومفاجأة للمستلم: ${formData.recipientName} (${formData.recipientPhone})\n`
+        : `• Surprise Dedication to: ${formData.recipientName} (${formData.recipientPhone})\n`;
     }
 
-    message += isAr ? `شكراً لكم ونرجو المتابعة!` : `Thank you, please confirm!`;
+    if (formData.notes) {
+      message += isAr
+        ? `• بطاقة الإهداء الملكية: «${formData.notes}»\n`
+        : `• Dedication Note: «${formData.notes}»\n`;
+    }
+
+    message += isAr
+      ? `━━━━━━━━━━━━━━━━━━━━━━━━━\nأرجو التكرم من مستشار التنسيق الملكي بتأكيد بدء قطف الزهور وتجهيز الموكب، مع فائق التقدير والمودة لمقامكم الرفيع.`
+      : `━━━━━━━━━━━━━━━━━━━━━━━━━\nKindly have the master florist confirm preparation. Thank you!`;
+
     window.open(`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -327,6 +353,17 @@ export default function CheckoutPage() {
                       placeholder={isAr ? '01XXXXXXXXX' : '+20 1X XXXX XXXX'}
                       value={formData.recipientPhone}
                       onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group full-width">
+                    <label>{isAr ? 'نص بطاقة الإهداء الملكية (اختياري)' : 'Royal Gift Card Dedication (Optional)'}</label>
+                    <textarea
+                      name="notes"
+                      rows={3}
+                      placeholder={isAr ? 'اكتب ما يفيض به قلبك من كلمات وسنخطّها بمداد أنيق...' : 'Write your heartfelt message and we will script it with elegance...'}
+                      value={formData.notes}
+                      onChange={handleChange}
+                      className="font-poetic checkout-gift-textarea"
                     />
                   </div>
                 </div>

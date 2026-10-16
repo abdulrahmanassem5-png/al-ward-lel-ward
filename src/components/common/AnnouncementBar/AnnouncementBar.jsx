@@ -19,8 +19,8 @@ export default function AnnouncementBar() {
             <Truck size={14} className="announce-icon" />
             <span>
               {isAr
-                ? 'توصيل مجاني وسريع لكافة مناطق القاهرة والجيزة للطلبات فوق 300 ج.م'
-                : 'Free express delivery across Cairo & Giza for orders over 300 EGP'}
+                ? 'موكب توصيل مبرّد ومكيّف يحفظ نضارة الورد لكافة مناطق القاهرة والجيزة'
+                : 'Chilled luxury express delivery across Cairo & Giza preserving fresh blooms'}
             </span>
           </span>
 
@@ -30,8 +30,8 @@ export default function AnnouncementBar() {
             <Sparkles size={14} className="announce-icon" />
             <span>
               {isAr
-                ? 'بوكيهات يدوية فاخرة تُصنع بحب لكل مناسبة'
-                : 'Handcrafted luxury bouquets made with love'}
+                ? 'تحف نباتية تُصاغ بأنامل أمهر فناني التنسيق الملكي'
+                : 'Handcrafted luxury floral masterpieces made with royal artistry'}
             </span>
           </span>
 
@@ -39,14 +39,14 @@ export default function AnnouncementBar() {
 
           <a
             href={`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(
-              isAr ? 'مرحباً، أود استشارة منسق الزهور لطلب بوكيه 🌹' : 'Hello, I would like floral assistance 🌹'
+              isAr ? 'مرحباً بكم دار الورد للورد، أود استشارة مستشار التنسيق الملكي 🌹✨' : 'Hello Al-Ward Lel-Ward, I would like concierge assistance 🌹✨'
             )}`}
             target="_blank"
             rel="noopener noreferrer"
             className="announce-item announce-link"
           >
             <Phone size={13} className="announce-icon" />
-            <span>{isAr ? `استشارة فورية: ${STORE_INFO.phone}` : `Concierge: ${STORE_INFO.phone}`}</span>
+            <span>{isAr ? `كونسيرج الزهور الملكي: ${STORE_INFO.phone}` : `Royal Concierge: ${STORE_INFO.phone}`}</span>
           </a>
         </div>
 

@@ -1,250 +1,1287 @@
+/* ============================================================
+   Haute Floristry QR Presentation Tag & Gift Card Generator Styles
+   Al-Ward Lel-Ward Atelier
+   ============================================================ */
+
+/* Seamless transparency for Dashboard Layout so Cinematic Background glows */
+.dashboard-container:has(.qrcodes-page-wrapper),
+.dashboard-main:has(.qrcodes-page-wrapper) {
+  background: transparent !important;
+}
+
+.qrcodes-page-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 120px);
+}
+
 .qrcodes-page {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
 }
 
+/* Page Header */
+.qrcodes-header {
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  background: rgba(18, 14, 20, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.header-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.header-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #E8C87A;
+  background: rgba(212, 168, 83, 0.12);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  width: fit-content;
+}
+
+.page-title {
+  font-family: 'Amiri', 'Playfair Display', serif;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.page-desc {
+  font-size: 0.9rem;
+  color: #C5BDB5;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-download-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 50px;
+  background: rgba(28, 22, 19, 0.85);
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  color: #E8C87A;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.btn-download-tag:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: rgba(212, 175, 55, 0.18);
+  border-color: #F3D99A;
+  color: #FFF6D6;
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+}
+
+.btn-download-tag:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn-print-tag {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 22px;
-  border-radius: var(--radius-full);
-  background: var(--gold-gradient);
-  color: #0A0A0A;
-  font-weight: 700;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #E8C87A, #B58A3E);
+  color: #0E0A10;
+  font-weight: 800;
   font-size: 0.95rem;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 20px rgba(212, 168, 83, 0.35);
+  white-space: nowrap;
 }
 
 .btn-print-tag:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.4);
+  box-shadow: 0 8px 26px rgba(212, 168, 83, 0.5);
+  background: linear-gradient(135deg, #F3D99A, #C99D4D);
 }
 
+
+/* Two-Column Grid */
 .qr-generator-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: 1.05fr 0.95fr;
   gap: var(--space-2xl);
   align-items: start;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1080px) {
   .qr-generator-grid {
     grid-template-columns: 1fr;
   }
 }
 
+/* Controls Column */
 .qr-controls-card {
-  padding: var(--space-xl);
+  padding: 1.75rem;
   border-radius: var(--radius-xl);
-  border: 1px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  background: rgba(18, 14, 20, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 1.25rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.controls-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.75rem;
+}
+
+.controls-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gold-icon {
+  color: #E8C87A;
+}
+
+.section-title-sm {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.controls-subtitle {
+  font-size: 0.8rem;
+  color: #9E968F;
+  margin-top: 0.25rem;
+  display: block;
 }
 
 .qr-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.45rem;
 }
 
 .qr-field label {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #E8C87A;
 }
 
 .qr-select,
 .qr-input-field,
 .qr-textarea {
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--border-subtle);
-  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(10, 8, 12, 0.85);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  color: #FFFFFF;
   font-family: inherit;
   font-size: 0.92rem;
   outline: none;
+  transition: all 0.2s ease;
 }
 
 .qr-select:focus,
 .qr-input-field:focus,
 .qr-textarea:focus {
-  border-color: var(--gold-primary);
+  border-color: #E8C87A;
+  box-shadow: 0 0 0 3px rgba(212, 168, 83, 0.2);
 }
 
 .qr-select option {
-  background: #1A1A1A;
+  background: #141018;
+  color: #FFFFFF;
+}
+
+.input-with-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-with-action .qr-input-field {
+  flex: 1;
+}
+
+.btn-field-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(212, 168, 83, 0.12);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  color: #E8C87A;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-field-action:hover {
+  background: rgba(212, 168, 83, 0.25);
+  border-color: #E8C87A;
+}
+
+.text-emerald {
+  color: #2ECC71;
 }
 
 .qr-fields-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
+  gap: 1rem;
 }
 
-.theme-chips {
+@media (max-width: 580px) {
+  .qr-fields-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dedication Type Buttons */
+.type-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .type-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.type-btn {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.65rem 0.4rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #C5BDB5;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.type-btn:hover {
+  background: rgba(212, 168, 83, 0.12);
+  border-color: rgba(212, 168, 83, 0.3);
+  color: #FFFFFF;
+}
+
+.type-btn.active {
+  background: rgba(212, 168, 83, 0.22);
+  border-color: #E8C87A;
+  color: #E8C87A;
+  font-weight: 700;
+  box-shadow: 0 0 14px rgba(212, 168, 83, 0.2);
+}
+
+/* Theme Chips */
+.theme-chips {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
 }
 
 .theme-chip {
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #C5BDB5;
   font-family: inherit;
   font-size: 0.82rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: start;
+}
+
+.theme-chip:hover {
+  border-color: rgba(212, 168, 83, 0.4);
+  color: #FFFFFF;
 }
 
 .theme-chip.active {
-  background: rgba(212, 168, 83, 0.15);
-  border-color: var(--gold-primary);
-  color: var(--gold-light);
+  border-color: #E8C87A;
+  background: rgba(212, 168, 83, 0.18);
+  color: #FFFFFF;
   font-weight: 700;
+  box-shadow: 0 0 12px rgba(212, 168, 83, 0.15);
 }
 
-/* Printable Card */
+.chip-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.dot-gold { background: #0A070C; border-color: #E8C87A; }
+.dot-burgundy { background: #350A18; border-color: #C4546D; }
+.dot-ivory { background: #FDFBF7; border-color: #D4A853; }
+.dot-parchment { background: #EADBC8; border-color: #8C6A43; }
+
+/* Switches */
+.qr-field-switches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  font-size: 0.84rem;
+  color: #C5BDB5;
+}
+
+.switch-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #D4A853;
+  cursor: pointer;
+}
+
+/* ============================================================
+   Live Presentation Card Preview Column
+   ============================================================ */
 .qr-preview-col {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.preview-label-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #E8C87A;
+  background: rgba(18, 14, 20, 0.8);
+  padding: 0.35rem 1rem;
+  border-radius: 50px;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+}
+
+.live-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2ECC71;
+  box-shadow: 0 0 10px #2ECC71;
+  animation: pulseGreen 1.8s infinite;
+}
+
+@keyframes pulseGreen {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+/* ============================================================
+   The Master Presentation Card (Printable Luxury Tag)
+   ============================================================ */
+.printable-gift-card {
+  width: 100%;
+  max-width: 410px;
+  position: relative;
+  border-radius: 24px;
+  padding: 2.2rem 1.6rem 1.8rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 45px rgba(212, 168, 83, 0.25);
+  transition: all 0.3s ease;
+  overflow: visible;
+}
+
+/* Theme variations */
+.printable-gift-card.theme-gold {
+  background: linear-gradient(145deg, #16111B, #0A070C);
+  color: #FFFFFF;
+  border: 1px solid rgba(212, 168, 83, 0.45);
+}
+
+.printable-gift-card.theme-burgundy {
+  background: linear-gradient(145deg, #2A0E17, #13060B);
+  color: #FFFFFF;
+  border: 1px solid rgba(212, 168, 83, 0.5);
+}
+
+.printable-gift-card.theme-ivory {
+  background: linear-gradient(145deg, #FFFCF7, #F2EDE4);
+  color: #1A141C;
+  border: 1px solid rgba(212, 168, 83, 0.6);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 35px rgba(212, 168, 83, 0.3);
+}
+
+.printable-gift-card.theme-parchment {
+  background: linear-gradient(145deg, #F5ECE0, #E5D5C1);
+  color: #26160B;
+  border: 1px solid #B58A3E;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Top Hanger Notch & Silk Ribbon */
+.tag-hanger-notch {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+}
+
+.grommet-ring {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #E8C87A 30%, #9A7432 90%);
+  border: 2px solid #5A4318;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
 
-.printable-gift-card {
-  width: 100%;
-  max-width: 380px;
-  background: #0D0D0D;
-  border-radius: var(--radius-lg);
-  padding: 18px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px var(--gold-glow);
-  position: relative;
+.grommet-hole {
+  position: absolute;
+  top: 7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #070508;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
+.silk-ribbon-bow {
+  position: absolute;
+  top: -12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+}
+
+.bow-center {
+  width: 10px;
+  height: 8px;
+  background: #C4546D;
+  border-radius: 2px;
+  z-index: 2;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+.bow-ribbon-left,
+.bow-ribbon-right {
+  width: 18px;
+  height: 12px;
+  border: 2px solid #C4546D;
+  background: rgba(196, 84, 109, 0.85);
+  border-radius: 50% 50% 10% 50%;
+  transform: rotate(-25deg);
+}
+
+.bow-ribbon-right {
+  border-radius: 50% 50% 50% 10%;
+  transform: rotate(25deg);
+}
+
+/* Tag Inner Border Frame */
 .tag-border-frame {
-  border: 1px solid var(--gold-primary);
-  border-radius: var(--radius-md);
-  padding: var(--space-xl) var(--space-lg);
+  position: relative;
+  border: 1.5px solid rgba(212, 168, 83, 0.65);
+  border-radius: 16px;
+  padding: 1.6rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--space-md);
-  background: radial-gradient(circle at 50% 20%, rgba(212, 168, 83, 0.06) 0%, transparent 80%);
+  gap: 1.15rem;
 }
 
+.theme-gold .tag-border-frame {
+  background: radial-gradient(circle at 50% 15%, rgba(212, 168, 83, 0.08) 0%, transparent 75%);
+}
+
+.theme-burgundy .tag-border-frame {
+  background: radial-gradient(circle at 50% 15%, rgba(196, 84, 109, 0.12) 0%, transparent 75%);
+}
+
+.theme-ivory .tag-border-frame {
+  border-color: rgba(181, 138, 62, 0.8);
+  background: radial-gradient(circle at 50% 15%, rgba(212, 168, 83, 0.15) 0%, transparent 75%);
+}
+
+.theme-parchment .tag-border-frame {
+  border-color: rgba(140, 106, 67, 0.85);
+  background: radial-gradient(circle at 50% 15%, rgba(140, 106, 67, 0.1) 0%, transparent 75%);
+}
+
+/* Four Ornate Corners */
+.frame-corner {
+  position: absolute;
+  color: #D4A853;
+  font-size: 0.75rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.corner-tl { top: 6px; inset-inline-start: 6px; }
+.corner-tr { top: 6px; inset-inline-end: 6px; }
+.corner-bl { bottom: 6px; inset-inline-start: 6px; }
+.corner-br { bottom: 6px; inset-inline-end: 6px; }
+
+/* ============================================================
+   Brand Header & Logo Crest at Top
+   ============================================================ */
 .card-brand-top {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.card-brand-top .flower-icon {
-  font-size: 1.8rem;
-  margin-bottom: 2px;
-}
-
-.card-brand-top .brand-text {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--gold-light);
-}
-
-.card-brand-top .tagline {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.card-recipient-line {
-  font-size: 1.05rem;
-  color: #fff;
-  border-bottom: 1px dashed rgba(212, 168, 83, 0.3);
-  padding-bottom: 4px;
+  gap: 0.65rem;
   width: 100%;
 }
 
+.card-logo-crest-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.crest-gold-ring {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 2px solid #D4A853;
+  box-shadow: 0 4px 18px rgba(212, 168, 83, 0.4), inset 0 0 10px rgba(212, 168, 83, 0.3);
+  overflow: hidden;
+  background: #0E0A10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  transition: transform 0.3s ease;
+}
+
+.crest-gold-ring:hover {
+  transform: scale(1.04);
+}
+
+.card-brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brand-crown-icon {
+  font-size: 1.15rem;
+  margin-bottom: -2px;
+  filter: drop-shadow(0 2px 4px rgba(212, 168, 83, 0.4));
+}
+
+.brand-text {
+  font-family: 'Amiri', 'Playfair Display', serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.theme-gold .brand-text,
+.theme-burgundy .brand-text {
+  color: #F8E4A0;
+  text-shadow: 0 2px 10px rgba(212, 168, 83, 0.4);
+}
+
+.theme-ivory .brand-text {
+  color: #2D1D10;
+}
+
+.theme-parchment .brand-text {
+  color: #381D0B;
+}
+
+.brand-atelier-tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.theme-gold .brand-atelier-tag,
+.theme-burgundy .brand-atelier-tag {
+  color: #D4A853;
+}
+
+.theme-ivory .brand-atelier-tag {
+  color: #8C6A30;
+}
+
+.theme-parchment .brand-atelier-tag {
+  color: #7A5528;
+}
+
+/* Filigree Divider */
+.card-filigree-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 85%;
+  margin-top: 0.2rem;
+}
+
+.filigree-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.6), transparent);
+}
+
+.filigree-diamond {
+  color: #D4A853;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+}
+
+/* Recipient Line */
+.card-recipient-line {
+  font-family: 'Amiri', serif;
+  font-size: 1.15rem;
+  border-bottom: 1px dashed rgba(212, 168, 83, 0.35);
+  padding-bottom: 0.35rem;
+  width: 90%;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
 .label-to {
-  color: var(--gold-light);
-  font-size: 0.85rem;
-  margin-inline-end: 6px;
+  font-size: 0.88rem;
+  color: #D4A853;
+  font-weight: 600;
 }
 
 .name-to {
-  font-weight: 700;
+  font-weight: 800;
+}
+
+.theme-gold .name-to,
+.theme-burgundy .name-to {
+  color: #FFFFFF;
+}
+
+.theme-ivory .name-to {
+  color: #1A141C;
+}
+
+.theme-parchment .name-to {
+  color: #26160B;
+}
+
+/* Card Message */
+.card-message-wrapper {
+  position: relative;
+  max-width: 320px;
+  padding: 0 1rem;
+}
+
+.quote-mark {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  color: rgba(212, 168, 83, 0.6);
+  line-height: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.quote-start {
+  margin-inline-end: 0.25rem;
+}
+
+.quote-end {
+  margin-inline-start: 0.25rem;
 }
 
 .card-message {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Amiri', Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
   font-style: italic;
-  max-width: 280px;
+  margin: 0;
+  display: inline;
 }
 
+.theme-gold .card-message,
+.theme-burgundy .card-message {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.theme-ivory .card-message {
+  color: #2D231E;
+}
+
+.theme-parchment .card-message {
+  color: #382516;
+}
+
+/* Sender Line */
 .card-sender-line {
-  font-size: 0.92rem;
-  color: var(--text-secondary);
+  font-family: 'Amiri', serif;
+  font-size: 1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 90%;
+}
+
+.label-from {
+  font-size: 0.82rem;
+  color: #D4A853;
 }
 
 .name-from {
-  color: var(--gold-light);
-  font-weight: 700;
-  margin-inline-start: 4px;
+  font-weight: 800;
 }
 
+.theme-gold .name-from,
+.theme-burgundy .name-from {
+  color: #F8E4A0;
+}
+
+.theme-ivory .name-from {
+  color: #1A141C;
+}
+
+.theme-parchment .name-from {
+  color: #2A170C;
+}
+
+/* Interactive QR Section */
 .card-qr-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 0.65rem;
+  margin-top: 0.2rem;
+}
+
+.qr-container-luxury {
+  position: relative;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1.5px solid rgba(212, 168, 83, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 0 12px rgba(212, 168, 83, 0.15);
+}
+
+.theme-gold .qr-container-luxury,
+.theme-burgundy .qr-container-luxury {
+  background: rgba(10, 7, 12, 0.9);
+}
+
+.theme-ivory .qr-container-luxury {
+  background: #FFFFFF;
+  border-color: #C99D4D;
+}
+
+.theme-parchment .qr-container-luxury {
+  background: #FAF5EE;
+  border-color: #B58A3E;
 }
 
 .qr-box {
-  padding: 10px;
-  background: #000;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-gold);
-}
-
-.qr-hint {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.qr-multimedia-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 0.72rem;
-  color: var(--gold-light);
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  border: 1px solid rgba(212, 168, 83, 0.35);
+  background: rgba(212, 168, 83, 0.12);
+  color: #E8C87A;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.card-footer-mark {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 8px;
+.theme-ivory .qr-multimedia-badge {
+  background: rgba(181, 138, 62, 0.15);
+  color: #8C6A30;
+  border-color: rgba(181, 138, 62, 0.4);
+}
+
+.theme-parchment .qr-multimedia-badge {
+  background: rgba(140, 106, 67, 0.15);
+  color: #6E4920;
+  border-color: rgba(140, 106, 67, 0.4);
+}
+
+.badge-icon {
+  flex-shrink: 0;
+}
+
+/* Footer Strip & Wax Seal */
+.card-footer-strip {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(212, 168, 83, 0.25);
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+  position: relative;
 }
 
-/* Print Media Query */
+.footer-meta-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  gap: 2px;
+  flex: 1;
+}
+
+.bouquet-mark-title {
+  font-family: 'Amiri', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #E8C87A;
+}
+
+.theme-ivory .bouquet-mark-title {
+  color: #7A5920;
+}
+
+.theme-parchment .bouquet-mark-title {
+  color: #6B451B;
+}
+
+.craft-certificate {
+  font-size: 0.65rem;
+  opacity: 0.75;
+}
+
+/* Royal Wax Seal Stamp */
+.royal-wax-seal {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #D63031, #800000 70%, #4D0000 100%);
+  border: 2px solid #B82525;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transform: rotate(-10deg);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.royal-wax-seal:hover {
+  transform: rotate(-5deg) scale(1.08);
+}
+
+.wax-seal-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  color: #FFE5E5;
+}
+
+.wax-emblem {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.wax-text {
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #FFE5E5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================
+   High-Fidelity Print & PDF Save Media Query
+   ============================================================ */
 @media print {
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+
+  html, body {
+    background: transparent !important;
+    background-color: #FFFFFF !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
   body * {
-    visibility: hidden;
+    visibility: hidden !important;
   }
-  #printable-card, #printable-card * {
-    visibility: visible;
+
+  .cinematic-bg-root,
+  .cinematic-bg-container,
+  .dashboard-sidebar,
+  .dashboard-topbar,
+  .qr-controls-card,
+  .page-header,
+  .preview-label-bar,
+  .navbar,
+  aside,
+  header {
+    display: none !important;
   }
+
+  /* Only show the printable gift card */
+  #printable-card,
+  #printable-card * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
   #printable-card {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 320px;
-    box-shadow: none;
-    border: 1px solid #000;
+    position: absolute !important;
+    left: 50% !important;
+    top: 20px !important;
+    transform: translateX(-50%) !important;
+    width: 390px !important;
+    max-width: 390px !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* ── 1. Velvet Crimson & Gold (العقيق القرمزي والذهب) ── */
+  #printable-card.theme-burgundy {
+    background: linear-gradient(145deg, #2A0E17, #13060B) !important;
+    background-color: #231219 !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.6) !important;
+    color: #FFFFFF !important;
+  }
+
+  #printable-card.theme-burgundy .tag-border-frame {
+    border-color: rgba(212, 175, 55, 0.5) !important;
+    background: rgba(10, 5, 8, 0.35) !important;
+  }
+
+  #printable-card.theme-burgundy .brand-text {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: initial !important;
+  }
+
+  #printable-card.theme-burgundy .brand-atelier-tag {
+    color: #C5B5A5 !important;
+  }
+
+  #printable-card.theme-burgundy .name-to,
+  #printable-card.theme-burgundy .name-from {
+    color: #F0D48B !important;
+  }
+
+  #printable-card.theme-burgundy .label-to,
+  #printable-card.theme-burgundy .label-from {
+    color: #B8A89A !important;
+  }
+
+  #printable-card.theme-burgundy .card-message {
+    color: #FAF4EB !important;
+  }
+
+  #printable-card.theme-burgundy .quote-mark,
+  #printable-card.theme-burgundy .frame-corner,
+  #printable-card.theme-burgundy .filigree-diamond,
+  #printable-card.theme-burgundy .brand-crown-icon {
+    color: #E8C87A !important;
+  }
+
+  #printable-card.theme-burgundy .filigree-line {
+    background: linear-gradient(90deg, transparent, #E8C87A, transparent) !important;
+  }
+
+  #printable-card.theme-burgundy .qr-multimedia-badge {
+    background: rgba(232, 200, 122, 0.12) !important;
+    border-color: rgba(232, 200, 122, 0.35) !important;
+    color: #F0D48B !important;
+  }
+
+  #printable-card.theme-burgundy .qr-container-luxury {
+    background: rgba(10, 5, 8, 0.5) !important;
+    border-color: rgba(212, 175, 55, 0.4) !important;
+  }
+
+  #printable-card.theme-burgundy .craft-certificate {
+    color: #A8988A !important;
+  }
+
+  #printable-card.theme-burgundy .bouquet-mark-title {
+    color: #E8C87A !important;
+  }
+
+  #printable-card.theme-burgundy .royal-wax-seal {
+    background: radial-gradient(circle, #8C101F, #4A050D) !important;
+    border-color: #A31828 !important;
+  }
+
+  /* ── 2. Black Velvet & Gold (المخمل الأسود والذهب) ── */
+  #printable-card.theme-gold {
+    background: linear-gradient(145deg, #16111B, #0A070C) !important;
+    background-color: #0A070C !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.6) !important;
+    color: #FFFFFF !important;
+  }
+
+  #printable-card.theme-gold .tag-border-frame {
+    border-color: rgba(212, 175, 55, 0.5) !important;
+    background: rgba(10, 7, 12, 0.35) !important;
+  }
+
+  #printable-card.theme-gold .brand-text {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: initial !important;
+  }
+
+  #printable-card.theme-gold .brand-atelier-tag {
+    color: #B5ABA0 !important;
+  }
+
+  #printable-card.theme-gold .name-to,
+  #printable-card.theme-gold .name-from {
+    color: #F0D48B !important;
+  }
+
+  #printable-card.theme-gold .label-to,
+  #printable-card.theme-gold .label-from {
+    color: #A89E8D !important;
+  }
+
+  #printable-card.theme-gold .card-message {
+    color: #FAF4EB !important;
+  }
+
+  #printable-card.theme-gold .quote-mark,
+  #printable-card.theme-gold .frame-corner,
+  #printable-card.theme-gold .filigree-diamond,
+  #printable-card.theme-gold .brand-crown-icon {
+    color: #E8C87A !important;
+  }
+
+  #printable-card.theme-gold .filigree-line {
+    background: linear-gradient(90deg, transparent, #E8C87A, transparent) !important;
+  }
+
+  #printable-card.theme-gold .qr-multimedia-badge {
+    background: rgba(232, 200, 122, 0.12) !important;
+    border-color: rgba(232, 200, 122, 0.35) !important;
+    color: #F0D48B !important;
+  }
+
+  #printable-card.theme-gold .qr-container-luxury {
+    background: rgba(10, 7, 12, 0.5) !important;
+    border-color: rgba(212, 175, 55, 0.4) !important;
+  }
+
+  #printable-card.theme-gold .craft-certificate {
+    color: #A8988A !important;
+  }
+
+  #printable-card.theme-gold .bouquet-mark-title {
+    color: #E8C87A !important;
+  }
+
+  #printable-card.theme-gold .royal-wax-seal {
+    background: radial-gradient(circle, #8C101F, #4A050D) !important;
+    border-color: #A31828 !important;
+  }
+
+  /* ── 3. Royal Ivory (العاجي اللؤلؤي) ── */
+  #printable-card.theme-ivory {
+    background: linear-gradient(145deg, #FFFCF7, #F2EDE4) !important;
+    background-color: #FDFBF7 !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.7) !important;
+    color: #1A141C !important;
+  }
+
+  #printable-card.theme-ivory .tag-border-frame {
+    border-color: rgba(212, 175, 55, 0.6) !important;
+    background: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  #printable-card.theme-ivory .brand-text,
+  #printable-card.theme-ivory .name-to,
+  #printable-card.theme-ivory .name-from,
+  #printable-card.theme-ivory .card-message {
+    color: #1A141C !important;
+  }
+
+  #printable-card.theme-ivory .label-to,
+  #printable-card.theme-ivory .label-from,
+  #printable-card.theme-ivory .brand-atelier-tag {
+    color: #6B5E50 !important;
+  }
+
+  #printable-card.theme-ivory .quote-mark,
+  #printable-card.theme-ivory .frame-corner,
+  #printable-card.theme-ivory .filigree-diamond,
+  #printable-card.theme-ivory .brand-crown-icon {
+    color: #B58A3E !important;
+  }
+
+  #printable-card.theme-ivory .filigree-line {
+    background: linear-gradient(90deg, transparent, #B58A3E, transparent) !important;
+  }
+
+  #printable-card.theme-ivory .qr-multimedia-badge {
+    background: rgba(181, 138, 62, 0.12) !important;
+    border-color: rgba(181, 138, 62, 0.35) !important;
+    color: #5A4318 !important;
+  }
+
+  /* ── 4. Cotton Parchment (الورق القطني المعتق) ── */
+  #printable-card.theme-parchment {
+    background: linear-gradient(145deg, #F5ECE0, #E5D5C1) !important;
+    background-color: #F4ECE1 !important;
+    border: 1.5px solid #B58A3E !important;
+    color: #26160B !important;
+  }
+
+  #printable-card.theme-parchment .tag-border-frame {
+    border-color: #B58A3E !important;
+    background: rgba(245, 236, 224, 0.45) !important;
+  }
+
+  #printable-card.theme-parchment .brand-text,
+  #printable-card.theme-parchment .name-to,
+  #printable-card.theme-parchment .name-from,
+  #printable-card.theme-parchment .card-message {
+    color: #26160B !important;
+  }
+
+  #printable-card.theme-parchment .label-to,
+  #printable-card.theme-parchment .label-from,
+  #printable-card.theme-parchment .brand-atelier-tag {
+    color: #634731 !important;
+  }
+
+  #printable-card.theme-parchment .quote-mark,
+  #printable-card.theme-parchment .frame-corner,
+  #printable-card.theme-parchment .filigree-diamond,
+  #printable-card.theme-parchment .brand-crown-icon {
+    color: #8C6524 !important;
+  }
+
+  #printable-card.theme-parchment .filigree-line {
+    background: linear-gradient(90deg, transparent, #8C6524, transparent) !important;
+  }
+
+  #printable-card.theme-parchment .qr-multimedia-badge {
+    background: rgba(140, 101, 36, 0.12) !important;
+    border-color: rgba(140, 101, 36, 0.35) !important;
+    color: #523812 !important;
+  }
+
+  /* ── Common Elements (Ribbon, Grommet, Crest Ring) ── */
+  #printable-card .grommet-ring {
+    background: radial-gradient(circle, #E8C87A 30%, #9A7432 90%) !important;
+    border-color: #5A4318 !important;
+  }
+
+  #printable-card .silk-ribbon-bow .bow-center {
+    background: radial-gradient(circle, #D4AF37 0%, #AA771C 100%) !important;
+  }
+
+  #printable-card .silk-ribbon-bow .bow-ribbon-left,
+  #printable-card .silk-ribbon-bow .bow-ribbon-right {
+    background: linear-gradient(135deg, #7A1224, #4A0814) !important;
+  }
+
+  #printable-card .crest-gold-ring {
+    border-color: #D4AF37 !important;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.4) !important;
   }
 }
+

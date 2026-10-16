@@ -30,6 +30,7 @@ import ProtectedRoute from './components/common/ProtectedRoute/ProtectedRoute.js
 import DashboardLayout from './layouts/DashboardLayout.jsx';
 import DashboardHome from './pages/dashboard/DashboardHome.jsx';
 import OrdersPage from './pages/dashboard/OrdersPage.jsx';
+import OffersPage from './pages/dashboard/OffersPage.jsx';
 import ProductsPage from './pages/dashboard/ProductsPage.jsx';
 import InventoryPage from './pages/dashboard/InventoryPage.jsx';
 import AnalyticsPage from './pages/dashboard/AnalyticsPage.jsx';
@@ -37,14 +38,16 @@ import CustomersPage from './pages/dashboard/CustomersPage.jsx';
 import QRCodesPage from './pages/dashboard/QRCodesPage.jsx';
 import SettingsPage from './pages/dashboard/SettingsPage.jsx';
 
+import CinematicBackground from './components/common/CinematicBackground/CinematicBackground.jsx';
+
 // Storefront Layout Wrapper
 function StorefrontLayout() {
   return (
     <>
+      <CinematicBackground />
       <AnnouncementBar />
       <Navbar />
-      <FloatingParticles count={18} />
-      <main style={{ minHeight: '80vh', width: '100%' }}>
+      <main style={{ minHeight: '80vh', width: '100%', position: 'relative', zIndex: 1 }}>
         <Outlet />
       </main>
       <WhatsAppConcierge />
@@ -91,6 +94,7 @@ export default function App() {
               >
                 <Route index element={<DashboardHome />} />
                 <Route path="orders" element={<OrdersPage />} />
+                <Route path="offers" element={<OffersPage />} />
                 <Route path="products" element={<ProductsPage />} />
                 <Route path="inventory" element={<InventoryPage />} />
                 <Route path="analytics" element={<AnalyticsPage />} />

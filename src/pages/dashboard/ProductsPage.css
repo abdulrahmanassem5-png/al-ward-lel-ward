@@ -131,12 +131,117 @@
   color: var(--text-secondary);
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.clickable-title {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.clickable-title:hover {
+  color: var(--gold-light);
+}
+
+.card-overlay-badge {
+  position: absolute;
+  bottom: 8px;
+  inset-inline-start: 8px;
+  background: rgba(18, 14, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 168, 83, 0.4);
+  color: #E8C87A;
+  padding: 3px 8px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.9;
+  transition: all 0.2s;
+}
+
+.mgmt-card-img-wrap:hover .card-overlay-badge {
+  background: rgba(212, 168, 83, 0.95);
+  color: #0E0A10;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 168, 83, 0.3);
+}
+
+.mgmt-recipe-summary-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(212, 168, 83, 0.25);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.mgmt-recipe-summary-box:hover {
+  background: rgba(212, 168, 83, 0.08);
+  border-color: rgba(212, 168, 83, 0.5);
+  transform: translateY(-1px);
+}
+
+.recipe-summary-metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+}
+
+.metric-label {
+  color: var(--text-muted);
+}
+
+.metric-val.cost-text {
+  color: #E8C87A;
+  font-weight: 600;
+}
+
+.metric-val.profit-text {
+  color: #2ECC71;
+  font-weight: 700;
+}
+
 .mgmt-card-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   padding-top: var(--space-xs);
   border-top: 1px solid var(--border-subtle);
   margin-top: auto;
+  gap: 8px;
+}
+
+.btn-open-recipe {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(212, 168, 83, 0.12);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  color: #E8C87A;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.btn-open-recipe:hover {
+  background: rgba(212, 168, 83, 0.25);
+  border-color: #D4A853;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 168, 83, 0.2);
 }
 
 .btn-delete-prod {
@@ -144,13 +249,86 @@
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  transition: color 0.2s ease;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .btn-delete-prod:hover {
+  background: rgba(239, 68, 68, 0.1);
   color: var(--error);
+}
+
+.btn-edit-prod {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #E8C87A;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  flex: 1;
+  justify-content: center;
+}
+
+.btn-edit-prod:hover {
+  background: rgba(212, 175, 55, 0.25);
+  border-color: #D4AF37;
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+  transform: translateY(-1px);
+}
+
+.card-video-indicator-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(168, 40, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+[dir="ltr"] .card-video-indicator-badge {
+  right: auto;
+  left: 10px;
+}
+
+.card-photos-count-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(10, 6, 12, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #E8C87A;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+[dir="ltr"] .card-photos-count-badge {
+  left: auto;
+  right: 10px;
 }
 
 /* Modal */

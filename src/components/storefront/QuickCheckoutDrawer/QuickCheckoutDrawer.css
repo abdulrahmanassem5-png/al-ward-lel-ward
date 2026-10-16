@@ -185,32 +185,77 @@
 }
 
 .drawer-size-chips {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
 .drawer-chip {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #9CA3AF;
-  padding: 8px 6px;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  color: #D1D5DB;
+  padding: 10px 14px;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
-  transition: all 0.2s ease;
+  transition: all 0.25s var(--ease-spring);
+  text-align: right;
+  width: 100%;
+}
+
+[dir="ltr"] .drawer-chip {
+  text-align: left;
+}
+
+.drawer-chip .chip-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.drawer-chip .chip-title {
+  font-family: var(--font-headline);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #F3F4F6;
+}
+
+.drawer-chip .chip-desc {
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  color: #9CA3AF;
+  line-height: 1.4;
+}
+
+.drawer-chip:hover {
+  background: rgba(212, 168, 83, 0.08);
+  border-color: rgba(212, 168, 83, 0.3);
 }
 
 .drawer-chip.active {
-  background: rgba(212, 168, 83, 0.15);
+  background: rgba(212, 168, 83, 0.14);
   border-color: #D4A853;
   color: #D4A853;
-  box-shadow: 0 0 12px rgba(212, 168, 83, 0.2);
+  box-shadow: 0 0 16px rgba(212, 168, 83, 0.18);
+}
+
+.drawer-chip.active .chip-title {
+  color: #D4A853;
+}
+
+.drawer-chip.active .chip-desc {
+  color: #E8C87A;
+}
+
+.drawer-gift-textarea {
+  font-family: var(--font-poetic) !important;
+  font-size: 1.05rem !important;
+  line-height: 1.6 !important;
+  color: #F3F4F6 !important;
 }
 
 .drawer-input-wrap {
@@ -311,3 +356,190 @@
     padding: 20px 16px;
   }
 }
+
+/* ── Free Chilled Delivery Progress Bar ── */
+.drawer-free-shipping-bar {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 18px;
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  background: rgba(20, 20, 28, 0.6);
+}
+
+.free-shipping-text-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.free-shipping-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.truck-gold-icon {
+  color: var(--gold-primary);
+  flex-shrink: 0;
+}
+
+.free-shipping-pct {
+  color: var(--gold-primary);
+  font-weight: 700;
+  font-size: 0.76rem;
+}
+
+.free-shipping-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.free-shipping-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #B8922F 0%, #D4A853 50%, #F4E8C1 100%);
+  border-radius: 999px;
+  transition: width 0.4s var(--ease-spring);
+  box-shadow: 0 0 10px rgba(212, 168, 83, 0.5);
+}
+
+/* ── Delivery Time Window Chips ── */
+.drawer-delivery-chips {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.drawer-delivery-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: start;
+  font-family: inherit;
+  transition: all 0.22s var(--ease-spring);
+}
+
+.drawer-delivery-chip:hover {
+  background: rgba(212, 168, 83, 0.06);
+  border-color: rgba(212, 168, 83, 0.3);
+  transform: translateX(-2px);
+}
+
+[dir="ltr"] .drawer-delivery-chip:hover {
+  transform: translateX(2px);
+}
+
+.drawer-delivery-chip.active {
+  background: rgba(212, 168, 83, 0.12);
+  border-color: var(--gold-primary);
+  color: #FFFFFF;
+  box-shadow: 0 0 15px rgba(212, 168, 83, 0.15);
+}
+
+.delivery-chip-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.delivery-chip-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.delivery-chip-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.delivery-chip-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ── Live Royal Stationery & Wax Seal Preview ── */
+.drawer-stationery-preview-wrap {
+  margin-top: 10px;
+}
+
+.stationery-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(212, 168, 83, 0.15);
+}
+
+.stationery-header-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.3px;
+}
+
+.stationery-watermark {
+  font-size: 0.68rem;
+  color: rgba(212, 168, 83, 0.4);
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+.stationery-card-body {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.stationery-card-text {
+  font-family: var(--font-poetic);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #F8F5E9;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  word-break: break-word;
+}
+
+.stationery-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(212, 168, 83, 0.2);
+}
+
+.stationery-seal-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.seal-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.seal-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+

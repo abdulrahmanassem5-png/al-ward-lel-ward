@@ -1,36 +1,121 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import HeroSection from '../../components/storefront/HeroSection/HeroSection.jsx';
 import ProductCard from '../../components/storefront/ProductCard/ProductCard.jsx';
 import SocialQRs from '../../components/storefront/SocialQRs/SocialQRs.jsx';
 import QuickViewModal from '../../components/storefront/QuickViewModal/QuickViewModal.jsx';
-import { MOCK_PRODUCTS, CATEGORIES, MOCK_TESTIMONIALS, STORE_INFO } from '../../config/constants.js';
-import { Sparkles, ArrowRight, ArrowLeft, Heart, Flower2, Gift, Truck, Star, CheckCircle, MessageCircle, SlidersHorizontal } from 'lucide-react';
+import TiltCard from '../../components/common/TiltCard/TiltCard.jsx';
+import SEO from '../../components/SEO.tsx';
+import { useQuickCheckout } from '../../context/QuickCheckoutContext.jsx';
+import { useNotification } from '../../context/NotificationContext.jsx';
+import confetti from 'canvas-confetti';
+import { MOCK_PRODUCTS, CATEGORIES, MOCK_TESTIMONIALS, STORE_INFO, CURRENCY } from '../../config/constants.js';
+import { getStoredProducts } from '../../utils/productStorageManager.js';
+import {
+  Sparkles,
+  ArrowRight,
+  ArrowLeft,
+  Flower2,
+  Gift,
+  Truck,
+  Star,
+  CheckCircle,
+  MessageCircle,
+  Zap,
+  Clock,
+  Crown,
+  Heart,
+  MoonStar,
+  Home,
+} from 'lucide-react';
 import './HomePage.css';
 
+const CATEGORY_ICONS = {
+  Crown,
+  Sparkles,
+  Heart,
+  MoonStar,
+  Home,
+  Gift,
+};
+
 export default function HomePage() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
+  const { openQuickCheckout } = useQuickCheckout();
   const isAr = i18n.language === 'ar';
   const ArrowIcon = isAr ? ArrowLeft : ArrowRight;
 
   const [activeCategory, setActiveCategory] = useState('all');
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [productsVersion, setProductsVersion] = useState(0);
+
+  useEffect(() => {
+    const handleSync = () => setProductsVersion((v) => v + 1);
+    window.addEventListener('al_ward_products_updated', handleSync);
+    return () => window.removeEventListener('al_ward_products_updated', handleSync);
+  }, []);
+
+  const allProducts = useMemo(() => getStoredProducts(), [productsVersion]);
+  const flagshipProduct = allProducts[0] || MOCK_PRODUCTS[0];
+
+  // Live active offer on flagship spotlight
+  const [spotlightOffer, setSpotlightOffer] = useState(null);
+  const [spotlightTimeLeft, setSpotlightTimeLeft] = useState(null);
+
+  useEffect(() => {
+    const checkSpotlightOffer = () => {
+      try {
+        const stored = localStorage.getItem('al_ward_offers');
+        if (stored) {
+          const offers = JSON.parse(stored);
+          const active = offers.find(
+            (o) => o.productId === flagshipProduct.id && o.status === 'active'
+          );
+          if (active) {
+            const end = new Date(active.endDate).getTime();
+            const now = Date.now();
+            const diff = end - now;
+            if (diff > 0) {
+              const hours = Math.floor(diff / (1000 * 60 * 60));
+              const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+              const pad = (n) => String(n).padStart(2, '0');
+              setSpotlightTimeLeft(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
+              setSpotlightOffer(active);
+            } else {
+              setSpotlightOffer(null);
+              setSpotlightTimeLeft(null);
+            }
+          } else {
+            setSpotlightOffer(null);
+            setSpotlightTimeLeft(null);
+          }
+        }
+      } catch (err) {
+        console.error('Error in checkSpotlightOffer:', err);
+      }
+    };
+
+    checkSpotlightOffer();
+    const interval = setInterval(checkSpotlightOffer, 1000);
+    return () => clearInterval(interval);
+  }, [flagshipProduct.id]);
 
   const homeFilterTabs = [
-    { id: 'all', name_ar: 'كافة الروائع (10)', name_en: 'All Creations (10)', icon: '✦' },
-    { id: 'wedding', name_ar: 'أعراس وخطوبة 💍', name_en: 'Weddings 💍', icon: '💍' },
-    { id: 'occasions', name_ar: 'تخرج واحتفالات 🎓', name_en: 'Graduations 🎓', icon: '🎓' },
+    { id: 'all', name_ar: 'كافة التحف النباتية (10)', name_en: 'All Creations (10)', icon: '✦' },
+    { id: 'wedding', name_ar: 'أعراس وخطوبة ملكية 💍', name_en: 'Weddings 💍', icon: '💍' },
+    { id: 'occasions', name_ar: 'تتويج وتخرج ومناسبات 🎓', name_en: 'Graduations 🎓', icon: '🎓' },
   ];
 
   const displayedProducts = activeCategory === 'all'
-    ? MOCK_PRODUCTS
-    : MOCK_PRODUCTS.filter((p) => p.category === activeCategory);
+    ? allProducts
+    : allProducts.filter((p) => p.category === activeCategory);
 
   const handleWhatsAppInquiry = () => {
     const text = isAr
-      ? 'مرحباً، أود استشارة منسق الزهور لاختيار بوكيه مناسب لمناسبة خاصة 💐'
-      : 'Hello, I would like a floral consultation for a special occasion 💐';
+      ? 'مرحباً بكم دار الورد للورد، أود استشارة مستشار التنسيق الملكي لتفصيل بوكيه استثنائي لمناسبة خاصة 💐🌹'
+      : 'Hello Al-Ward Lel-Ward, I would like a consultation with the master florist for a bespoke luxury bouquet 💐🌹';
     window.open(`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -38,31 +123,39 @@ export default function HomePage() {
     {
       num: '01',
       icon: <Flower2 size={28} />,
-      title_ar: 'اختر أو خصّص بوكيهك',
-      title_en: 'Choose or Customize',
-      desc_ar: 'تصفح تشكيلة بوكيهاتنا الفاخرة أو اختر باقة مخصصة بالورود والألوان والملحقات التي تفضلها.',
-      desc_en: 'Explore our luxury bouquets or request a customized arrangement with your chosen stems.',
+      title_ar: '01: اختَر تحفتك أو فصّلها على مقاس مشاعرك',
+      title_en: '01: Choose or Customize Masterpiece',
+      desc_ar: 'تأمل تشكيلتنا المختارة من البوكيهات الفاخرة أو نسق مع مستشارنا باقة تعبر عن نبض قلبك.',
+      desc_en: 'Explore our curated luxury collections or coordinate a bespoke bouquet that articulates your heartbeat.',
     },
     {
       num: '02',
       icon: <Gift size={28} />,
-      title_ar: 'أضف لمستك وبطاقتك',
-      title_en: 'Personalize & Card',
-      desc_ar: 'اكتب رسالتك الخاصة وطباعة إهداء فاخر أو باركود صوتي/فيديو يرافق هديتك.',
-      desc_en: 'Write your heartfelt message and include a luxury card or audio QR code.',
+      title_ar: '02: دوّن عهدك في بطاقة إهداء مذهبة',
+      title_en: '02: Inscribe Dedication in Gold',
+      desc_ar: 'اكتب رسالتك وسنطبعها على ورق قطني فاخر، أو أرفق باركود صوتي/فيديو يخلد صوتك.',
+      desc_en: 'Pen your heartfelt message scripted on cotton stationery, or attach an audio/video QR code.',
     },
     {
       num: '03',
       icon: <Truck size={28} />,
-      title_ar: 'توصيل مبرد وسريع',
-      title_en: 'Chilled Express Delivery',
-      desc_ar: 'سيارات مجهزة تحافظ على نضارة كل ورقة ورد لتصل هديتك كأنها قُطفت في ذات اللحظة.',
-      desc_en: 'Climate-controlled delivery preserving every petal as if freshly picked.',
+      title_ar: '03: موكب توصيل مبرّد يحفظ نضارة كل بتلة',
+      title_en: '03: Chilled Climate-Controlled Procession',
+      desc_ar: 'تصل هديتك في أوج نضارتها كأنها قُطفت في ذات اللحظة داخل سيارات مجهزة لحماية الزهور.',
+      desc_en: 'Your floral gift arrives at peak dewy freshness within specialized climate-controlled delivery vehicles.',
     },
   ];
 
   return (
     <div className="home-page">
+      <SEO
+        title={isAr ? 'الرئيسية — دار صياغة الزهور والمشاعر الملكية' : 'Home — Royal Floristry Atelier'}
+        description={
+          isAr
+            ? 'الورد للورد — دار صياغة الزهور والتحف النباتية الملكية. اكتشف تشكيلات البوكيهات النادرة وتصاميم الأعراس والمناسبات الفاخرة.'
+            : 'Al-Ward Lel-Ward — Royal Floristry Atelier. Discover rare botanical masterpieces and bespoke floral gifts.'
+        }
+      />
       {/* 1. Hero Section */}
       <HeroSection />
 
@@ -73,16 +166,140 @@ export default function HomePage() {
             <div>
               <span className="section-subtitle">
                 <Sparkles size={14} />
-                {isAr ? 'روائع مختارة وحصرية' : 'Curated Masterpieces'}
+                {isAr ? 'روائع حصرية منتقاة' : 'Curated Masterpieces'}
               </span>
               <h2 className="section-title">
-                {isAr ? 'أحدث وأرقى إبداعاتنا الحقيقية' : 'Featured Handcrafted Bouquets'}
+                {isAr ? 'أحدث وأرقى إبداعات الدار الملكية' : 'Featured Handcrafted Bouquets'}
               </h2>
+              <p className="section-poetic-quote font-poetic">
+                {isAr
+                  ? '«تخيّرنا لك من أصلابِ البساتينِ درراً ... تُهدي إلى الروحِ عِطراً لا يُواريهِ نسيان»'
+                  : 'Crafted from rare blossoms to immortalize your finest moments'}
+              </p>
             </div>
             <Link to="/shop" className="view-all-link">
-              <span>{isAr ? 'عرض جميع البوكيهات (10)' : 'View All Bouquets (10)'}</span>
+              <span>{isAr ? 'استعراض كافة التحف (10)' : 'View All Bouquets (10)'}</span>
               <ArrowIcon size={16} />
             </Link>
+          </div>
+
+          {/* ✦ Masterpiece of the Season Spotlight ✦ */}
+          <div className="masterpiece-spotlight-card glass-royal-card shimmer-active">
+            <div className="spotlight-visual-col">
+              <TiltCard maxTilt={5} glare={true} className="spotlight-tilt">
+                <div className="spotlight-img-wrap">
+                  <img
+                    src={flagshipProduct.images?.[0] || '/images/bouquet-save-the-date.jpg'}
+                    alt={isAr ? flagshipProduct.name_ar : flagshipProduct.name_en}
+                    className="spotlight-img"
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80';
+                    }}
+                  />
+                  <span className="spotlight-badge">
+                    <Sparkles size={14} />
+                    <span>{isAr ? 'تحفة الموسم الأيقونية ✦' : 'Masterpiece of the Season ✦'}</span>
+                  </span>
+                </div>
+              </TiltCard>
+            </div>
+
+            <div className="spotlight-details-col">
+              <div className="spotlight-tag-row">
+                {spotlightOffer && spotlightTimeLeft && (
+                  <>
+                    <span className="countdown-pill-badge">
+                      <Clock size={12} />
+                      <span>{isAr ? `ينتهي العرض [${spotlightTimeLeft}] ⏳` : `Deal Ends [${spotlightTimeLeft}] ⏳`}</span>
+                    </span>
+                    <span className="sensory-pill" style={{ background: 'rgba(239, 68, 68, 0.15)', borderColor: 'rgba(239, 68, 68, 0.4)', color: '#F87171' }}>
+                      <span>🔥</span>
+                      <span>{spotlightOffer.badgeText || (isAr ? `خصم -${spotlightOffer.discountPercent}%` : `-${spotlightOffer.discountPercent}% OFF`)}</span>
+                    </span>
+                  </>
+                )}
+                <span className="sensory-pill">
+                  <span>👑</span>
+                  <span>{isAr ? 'مجموعة كبار الشخصيات VIP' : 'VIP High Haute Floristry'}</span>
+                </span>
+                <span className="sensory-pill scent">
+                  <span>🌸</span>
+                  <span>{isAr ? 'عبير البيوني والمسك الأبيض' : 'Peony & White Musk Notes'}</span>
+                </span>
+                <span className="sensory-pill provenance">
+                  <span>🌍</span>
+                  <span>{isAr ? 'زهور أمستردام وإكوادور النادرة' : 'Rare Amsterdam & Quito Blooms'}</span>
+                </span>
+              </div>
+
+              <h3 className="spotlight-title">
+                <Link to={`/product/${flagshipProduct.id}`}>
+                  {isAr ? flagshipProduct.name_ar : flagshipProduct.name_en}
+                </Link>
+              </h3>
+
+              <p className="spotlight-desc">
+                {isAr ? flagshipProduct.description_ar : flagshipProduct.description_en}
+              </p>
+
+              {/* Composition Provenance */}
+              <div className="spotlight-provenance-grid">
+                <div className="provenance-item">
+                  <span className="prov-label">{isAr ? 'البتلات المختارة' : 'Rare Blooms'}:</span>
+                  <span className="prov-val">{isAr ? 'بيوني هولندي أبيض ناصع' : 'Royal Dutch White Peonies'}</span>
+                </div>
+                <div className="provenance-item">
+                  <span className="prov-label">{isAr ? 'التطريز والحفظ' : 'Craft & Accent'}:</span>
+                  <span className="prov-val">{isAr ? 'حبات لؤلؤ وتول فرنسي منسدل' : 'Natural Pearls & French Tulle'}</span>
+                </div>
+                <div className="provenance-item">
+                  <span className="prov-label">{isAr ? 'التغليف الملكي' : 'Included Box'}:</span>
+                  <span className="prov-val">{isAr ? 'صندوق أرز تذكاري مخصص بالصورة' : 'Personalized Keepsake Box'}</span>
+                </div>
+              </div>
+
+              <div className="spotlight-footer">
+                <div className="spotlight-price-box">
+                  <span className="spotlight-price-label">{isAr ? 'قيمة الاقتناء الملكي' : 'Acquisition Price'}:</span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                    <span className="spotlight-price-num">
+                      {spotlightOffer ? spotlightOffer.salePrice : flagshipProduct.price} <small>{isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en}</small>
+                    </span>
+                    {spotlightOffer && (
+                      <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+                        {flagshipProduct.price} {isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="spotlight-actions">
+                  <button
+                    onClick={() => {
+                      const itemToOrder = spotlightOffer
+                        ? { ...flagshipProduct, price: spotlightOffer.salePrice, originalPrice: flagshipProduct.price }
+                        : flagshipProduct;
+                      openQuickCheckout(itemToOrder);
+                      confetti({
+                        particleCount: 50,
+                        spread: 60,
+                        origin: { y: 0.6 },
+                        colors: ['#D4A853', '#E8C87A', '#FFFFFF'],
+                      });
+                    }}
+                    className="btn-royal-gold"
+                  >
+                    <Zap size={16} />
+                    <span>{isAr ? 'اقتناء سريع ومباشر ⚡' : 'Instant Acquisition ⚡'}</span>
+                  </button>
+
+                  <Link to={`/product/${flagshipProduct.id}`} className="btn-royal-outline">
+                    <span>{isAr ? 'تأمل التفاصيل الكاملة' : 'View Full Details'}</span>
+                    <ArrowIcon size={16} />
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Luxury Filter Pills Bar */}
@@ -116,33 +333,66 @@ export default function HomePage() {
           <div className="section-header text-center">
             <span className="section-subtitle">
               <Sparkles size={14} />
-              {isAr ? 'تناغم لكل مناسبة' : 'For Every Occasion'}
+              {isAr ? 'تناغم لكل عهد ومناسبة' : 'For Every Occasion'}
             </span>
             <h2 className="section-title">
-              {isAr ? 'تصفح حسب المناسبة' : 'Explore By Occasion'}
+              {isAr ? 'روائع تليق بمقام مناسباتكم' : 'Explore By Occasion'}
             </h2>
-            <p className="section-desc">
+            <p className="section-poetic-quote font-poetic">
               {isAr
-                ? 'لكل لحظة بوكيه يحكي تفاصيلها بجمال لا يُنسى'
+                ? '«لكل عهدٍ ومناسبةٍ تحفةٌ تُصاغ ... تفيضُ بوقارِ الحضورِ ونبضِ الشُّعور»'
                 : 'Every precious moment has a bouquet that narrates its beauty'}
             </p>
           </div>
 
           <div className="categories-grid">
-            {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.id}
-                to={`/shop?category=${cat.id}`}
-                className="category-card glass"
-              >
-                <div className="cat-card-icon">{cat.icon}</div>
-                <h3 className="cat-card-title">{isAr ? cat.name_ar : cat.name_en}</h3>
-                <span className="cat-card-arrow">
-                  <ArrowIcon size={16} />
-                </span>
-              </Link>
-            ))}
+            {CATEGORIES.map((cat) => {
+              const IconComp = CATEGORY_ICONS[cat.iconName] || Sparkles;
+              return (
+                <Link
+                  key={cat.id}
+                  to={`/shop?category=${cat.id}`}
+                  className="category-card"
+                >
+                  <div className="cat-card-ambient-glow" />
+
+                  {/* Circular Rose Showcase with Monoline Icon Badge */}
+                  <div className="cat-card-media-wrapper">
+                    <div className="cat-card-image-ring">
+                      <img
+                        src={cat.image}
+                        alt={isAr ? cat.name_ar : cat.name_en}
+                        className="cat-card-image"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="cat-card-icon-badge" title={isAr ? cat.name_ar : cat.name_en}>
+                      <IconComp size={16} strokeWidth={1.25} color="#D4AF37" />
+                    </div>
+                  </div>
+
+                  {/* Title & Subtitle */}
+                  <div className="cat-card-content">
+                    <h3 className="cat-card-title">{isAr ? cat.name_ar : cat.name_en}</h3>
+                    <p className="cat-card-subtitle">
+                      {isAr ? cat.subtitle_ar : cat.subtitle_en}
+                    </p>
+                  </div>
+
+                  {/* Explore Link with Directional Arrow */}
+                  <div className="cat-card-action">
+                    <span className="cat-card-action-text">
+                      {isAr ? 'استكشف' : 'Explore'}
+                    </span>
+                    <span className="cat-card-arrow">
+                      <ArrowIcon size={14} strokeWidth={1.5} />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
+
         </div>
       </section>
 
@@ -152,11 +402,16 @@ export default function HomePage() {
           <div className="section-header text-center">
             <span className="section-subtitle">
               <Sparkles size={14} />
-              {isAr ? 'رحلة البوكيه' : 'The Bouquet Journey'}
+              {isAr ? 'فلسفة الصياغة والقطف' : 'The Bouquet Journey'}
             </span>
             <h2 className="section-title">
-              {isAr ? 'كيف نصنع بوكيهاتكم' : 'How We Craft Your Gift'}
+              {isAr ? 'من بساتين القطف إلى وجدان من تحب' : 'From Bloom to Heart'}
             </h2>
+            <p className="section-poetic-quote font-poetic">
+              {isAr
+                ? '«رحلةٌ من عبقِ البساتينِ إلى خفوقِ القلب ... تُحفظُ فيها النَّضارةُ وتُخلَّدُ فيها الأماني»'
+                : 'A royal journey of care from the cradle of the bloom to an unforgettable smile'}
+            </p>
           </div>
 
           <div className="steps-grid">
@@ -178,11 +433,16 @@ export default function HomePage() {
           <div className="section-header text-center">
             <span className="section-subtitle">
               <Sparkles size={14} />
-              {isAr ? 'شهادات نعتز بها' : 'Customer Stories'}
+              {isAr ? 'أصداء اعتزاز ووفاء' : 'Customer Stories'}
             </span>
             <h2 className="section-title">
-              {isAr ? 'ماذا يقول عملاؤنا' : 'What Our Clients Say'}
+              {isAr ? 'شهادات من منحناهم شرف تخليد لحظاتهم الأغلى' : 'What Our Clients Say'}
             </h2>
+            <p className="section-poetic-quote font-poetic">
+              {isAr
+                ? '«ثقةٌ نعتزُّ بها .. حين تُصبحُ مشاعرُكم أمانةً في محرابِ إتقانِنا»'
+                : 'When our blooms touch hearts, gratitude transcends words'}
+            </p>
           </div>
 
           <div className="testimonials-grid">
@@ -201,7 +461,7 @@ export default function HomePage() {
                   <div>
                     <h4 className="author-name">{isAr ? t.name_ar : t.name_en}</h4>
                     <span className="author-badge">
-                      <CheckCircle size={12} /> {isAr ? 'عميل معتمد' : 'Verified Buyer'}
+                      <CheckCircle size={12} /> {isAr ? (t.title_ar || 'عميل معتمد') : 'Verified Buyer'}
                     </span>
                   </div>
                 </div>
@@ -221,21 +481,21 @@ export default function HomePage() {
             <div className="cta-content">
               <span className="cta-tag">
                 <Sparkles size={14} />
-                {isAr ? 'طلب خاص واستشارة مباشرة' : 'Bespoke Order Consultation'}
+                {isAr ? 'استشارة الذوق وتفصيل التحف الخاصة' : 'Bespoke Order Consultation'}
               </span>
               <h2 className="cta-title">
                 {isAr
-                  ? 'هل تبحث عن تصميم بوكيه استثنائي لمناسبتك؟'
+                  ? 'هل تبحث عن تحفة زهور فريدة تُصاغ خصيصاً لمناسبتك؟'
                   : 'Looking for a one-of-a-kind bouquet for your event?'}
               </h2>
               <p className="cta-desc">
                 {isAr
-                  ? 'تحدث مباشرة مع فريق التنسيق الحرفي لدينا عبر واتساب لتنفيذ باقة أحلامك بأدق التفاصيل والرسائل التذكارية.'
+                  ? 'تحدث مباشرة مع مستشار التنسيق الملكي عبر واتساب لتنفيذ باقة أحلامك بأدق معايير الإتقان وبطاقات الإهداء المذهبة والرموز الصوتية.'
                   : 'Connect directly with our master florists via WhatsApp to tailor your dream floral arrangement.'}
               </p>
               <button onClick={handleWhatsAppInquiry} className="cta-btn">
                 <MessageCircle size={20} />
-                <span>{isAr ? 'تواصل معنا عبر واتساب الآن' : 'Chat with Master Florist'}</span>
+                <span>{isAr ? 'بدء محادثة الكونسيرج الفورية ✦' : 'Chat with Master Florist'}</span>
               </button>
             </div>
           </div>

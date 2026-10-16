@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ProductCard from '../../components/storefront/ProductCard/ProductCard.jsx';
 import CategoryFilter from '../../components/storefront/CategoryFilter/CategoryFilter.jsx';
 import QuickViewModal from '../../components/storefront/QuickViewModal/QuickViewModal.jsx';
+import SEO from '../../components/SEO.tsx';
 import { MOCK_PRODUCTS, CATEGORIES } from '../../config/constants.js';
+import { getStoredProducts } from '../../utils/productStorageManager.js';
 import { Search, SlidersHorizontal, Sparkles, X, ArrowUpDown } from 'lucide-react';
 import './ShopPage.css';
 
@@ -18,6 +20,13 @@ export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('featured'); // 'featured', 'price-low', 'price-high', 'rating'
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [productsVersion, setProductsVersion] = useState(0);
+
+  useEffect(() => {
+    const handleSync = () => setProductsVersion((v) => v + 1);
+    window.addEventListener('al_ward_products_updated', handleSync);
+    return () => window.removeEventListener('al_ward_products_updated', handleSync);
+  }, []);
 
   const handleCategoryChange = (catId) => {
     setActiveCategory(catId);
@@ -29,8 +38,10 @@ export default function ShopPage() {
     setSearchParams(searchParams);
   };
 
+  const allProducts = useMemo(() => getStoredProducts(), [productsVersion]);
+
   const filteredProducts = useMemo(() => {
-    let result = [...MOCK_PRODUCTS];
+    let result = [...allProducts];
 
     // Filter by Category
     if (activeCategory !== 'all') {
@@ -66,19 +77,28 @@ export default function ShopPage() {
 
   return (
     <div className="shop-page container-wide">
+      <SEO
+        title={isAr ? 'معرض البوكيهات والتحف النباتية' : 'Royal Floral Catalog'}
+        description={
+          isAr
+            ? 'تصفح تشكيلة بوكيهات الورد الطبيعي الفاخرة، باقات الزفاف وتجهيزات المناسبات الملكية من دار الورد للورد مع توصيل فوري.'
+            : 'Browse our exclusive catalog of luxury botanical bouquets, bridal arrangements, and bespoke creations with same-day royal delivery.'
+        }
+        canonicalUrl="https://el-ward-ll-ward-store.vercel.app/shop"
+      />
       {/* Header */}
       <div className="shop-header">
         <span className="shop-subtitle">
           <Sparkles size={14} />
-          {isAr ? 'كتالوج متجر الورد' : 'The Flower Catalog'}
+          {isAr ? 'خزانة الروائع الملكية' : 'The Royal Catalog'}
         </span>
         <h1 className="shop-title">
-          {isAr ? 'تشكيلة البوكيهات الفاخرة' : 'Luxury Flower Bouquets'}
+          {isAr ? 'معرض التحف النباتية والبوكيهات الفاخرة' : 'Royal Botanical Masterpieces'}
         </h1>
-        <p className="shop-desc">
+        <p className="shop-desc font-poetic" style={{ fontSize: '1.2rem', color: 'var(--gold-light)' }}>
           {isAr
-            ? 'تصفح باقاتنا المصنوعة يدوياً بحب وعناية، مع إمكانية التخصيص الكامل والطلب المباشر.'
-            : 'Handcrafted floral collections tailored with care, elegance, and express delivery.'}
+            ? '«تأمل روائع بساتين هولندا وأعالي الإكوادور، صِيغت لتبهر الأعين وتخلد أبهى لحظات العمر»'
+            : '«Handcrafted floral masterpieces tailored to immortalize your most precious moments»'}
         </p>
       </div>
 
@@ -91,7 +111,7 @@ export default function ShopPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={isAr ? 'ابحث عن بوكيه، نوع ورد، أو مناسبة...' : 'Search by bouquet, flower type, or occasion...'}
+            placeholder={isAr ? 'ابحث عن تحفة، نوع زهور (بيوني، جوري، توليب)، أو مناسبة...' : 'Search creations, stems, or occasions...'}
             className="search-input"
           />
           {searchQuery && (
@@ -127,8 +147,8 @@ export default function ShopPage() {
       <div className="results-count-bar">
         <span>
           {isAr
-            ? `عرض ${filteredProducts.length} من أصل ${MOCK_PRODUCTS.length} بوكيه متاح`
-            : `Showing ${filteredProducts.length} of ${MOCK_PRODUCTS.length} bouquets`}
+            ? `عرض ${filteredProducts.length} من أصل ${allProducts.length} بوكيه متاح`
+            : `Showing ${filteredProducts.length} of ${allProducts.length} bouquets`}
         </span>
       </div>
 

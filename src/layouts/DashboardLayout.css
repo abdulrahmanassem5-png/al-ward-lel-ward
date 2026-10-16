@@ -39,8 +39,26 @@
   text-decoration: none;
 }
 
-.sidebar-logo .brand-flower {
-  font-size: 2rem;
+.sidebar-logo-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  padding: 2px;
+  background: #000000;
+  border: 1.5px solid var(--border-gold, #D4AF37);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sidebar-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .sidebar-logo .brand-name {

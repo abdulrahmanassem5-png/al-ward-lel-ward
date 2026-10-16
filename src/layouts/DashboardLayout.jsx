@@ -20,6 +20,7 @@ import {
   ChevronRight,
   Users,
   Settings,
+  Tag,
 } from 'lucide-react';
 import './DashboardLayout.css';
 
@@ -51,6 +52,7 @@ export default function DashboardLayout() {
   const navItems = [
     { to: '/dashboard', label_ar: 'نظرة عامة', label_en: 'Overview', icon: <LayoutDashboard size={20} />, exact: true },
     { to: '/dashboard/orders', label_ar: 'إدارة الطلبات', label_en: 'Orders', icon: <ShoppingBag size={20} />, badge: '3' },
+    { to: '/dashboard/offers', label_ar: 'العروض الملكية والخصومات', label_en: 'Royal Deals & Offers', icon: <Tag size={20} />, badge: '🔥' },
     { to: '/dashboard/products', label_ar: 'كتالوج البوكيهات', label_en: 'Bouquets Catalog', icon: <Flower2 size={20} /> },
     { to: '/dashboard/inventory', label_ar: 'المخزون والمواد', label_en: 'Raw Inventory', icon: <Boxes size={20} /> },
     { to: '/dashboard/analytics', label_ar: 'المبيعات والأداء', label_en: 'Analytics', icon: <TrendingUp size={20} /> },
@@ -70,7 +72,9 @@ export default function DashboardLayout() {
       <aside className={`dashboard-sidebar glass ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
           <Link to="/" className="sidebar-logo">
-            <span className="brand-flower">🌹</span>
+            <div className="sidebar-logo-badge">
+              <img src="/images/logo.jpg" alt="الورد للورد" className="sidebar-logo-img" />
+            </div>
             <div>
               <span className="brand-name">{isAr ? 'الورد للورد' : 'Al-Ward'}</span>
               <span className="brand-tag">{isAr ? 'لوحة الإدارة' : 'Admin Portal'}</span>

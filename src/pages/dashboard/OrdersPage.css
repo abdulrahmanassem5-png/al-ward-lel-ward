@@ -407,3 +407,340 @@
   cursor: pointer;
   font-family: inherit;
 }
+
+/* Financial KPI Cards */
+.orders-financial-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.orders-kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.35rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(14px);
+  transition: all 0.2s;
+}
+
+.orders-kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 168, 83, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.orders-kpi-card.highlight-profit {
+  border-color: rgba(46, 204, 113, 0.35);
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.08), rgba(15, 11, 16, 0.6));
+}
+
+.kpi-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.revenue-icon {
+  background: rgba(212, 168, 83, 0.15);
+  color: #E8C87A;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+}
+
+.cost-icon {
+  background: rgba(224, 108, 117, 0.15);
+  color: #FFA5BA;
+  border: 1px solid rgba(224, 108, 117, 0.3);
+}
+
+.profit-icon {
+  background: rgba(46, 204, 113, 0.18);
+  color: #2ECC71;
+  border: 1px solid rgba(46, 204, 113, 0.4);
+}
+
+.margin-icon {
+  background: rgba(155, 89, 182, 0.18);
+  color: #C39BD3;
+  border: 1px solid rgba(155, 89, 182, 0.35);
+}
+
+.kpi-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.kpi-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin: 0.15rem 0;
+}
+
+.kpi-val.profit-val {
+  color: #2ECC71;
+  text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+}
+
+.kpi-val.margin-val {
+  color: #E8C87A;
+}
+
+.kpi-sub {
+  font-size: 0.72rem;
+  color: #8C847D;
+}
+
+/* Table Financial Styles */
+.cell-cost {
+  white-space: nowrap;
+}
+
+.order-cost-chip {
+  font-size: 0.82rem;
+  color: #E8C87A;
+  background: rgba(212, 168, 83, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 168, 83, 0.2);
+}
+
+.cell-profit {
+  white-space: nowrap;
+}
+
+.order-profit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2ECC71;
+  background: rgba(46, 204, 113, 0.12);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.order-profit-badge small {
+  font-size: 0.72rem;
+  opacity: 0.85;
+}
+
+.cell-inventory-status {
+  white-space: nowrap;
+}
+
+.deduction-badge-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #2ECC71;
+  background: rgba(46, 204, 113, 0.15);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  padding: 3px 7px;
+  border-radius: 50px;
+}
+
+.deduction-badge-done.large {
+  font-size: 0.85rem;
+  padding: 5px 12px;
+}
+
+.btn-deduct-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #E8C87A;
+  background: rgba(212, 168, 83, 0.12);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-deduct-inline:hover {
+  background: rgba(212, 168, 83, 0.25);
+  border-color: #E8C87A;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.c-loc-sub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Modal Profit Section */
+.modal-profit-section {
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  background: linear-gradient(135deg, rgba(35, 25, 40, 0.6), rgba(18, 14, 20, 0.8));
+}
+
+.profit-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(212, 168, 83, 0.15);
+  padding-bottom: 0.75rem;
+}
+
+.section-gold-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.05rem;
+  color: #E8C87A;
+  margin: 0;
+}
+
+.section-gold-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 3px 0 0 0;
+}
+
+.btn-deduct-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #D4A853, #9A7432);
+  border: none;
+  color: #0E0A10;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-deduct-now:hover {
+  background: linear-gradient(135deg, #E8C87A, #B58A3E);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 168, 83, 0.3);
+}
+
+.modal-materials-table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.modal-materials-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.modal-materials-table th {
+  text-align: inherit;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #D4A853;
+  font-size: 0.76rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modal-materials-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.mat-source-bouquet {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.mat-qty-chip {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.76rem;
+  color: #F8F5F0;
+}
+
+.order-net-profit-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.profit-box-item {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profit-box-item.equal {
+  border-color: rgba(46, 204, 113, 0.4);
+  background: rgba(46, 204, 113, 0.08);
+}
+
+.box-item-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.box-item-val {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.revenue-val { color: #FFFFFF; }
+.cost-val { color: #FFA5BA; }
+.profit-val-highlight { color: #2ECC71; }
+.margin-val-highlight { color: #E8C87A; }
+
+@media (max-width: 900px) {
+  .orders-financial-kpis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .order-net-profit-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 580px) {
+  .orders-financial-kpis-grid {
+    grid-template-columns: 1fr;
+  }
+}

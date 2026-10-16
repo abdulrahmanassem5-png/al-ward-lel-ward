@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Ultra-Luxury Cinematic Ken Burns Crossfade Background
+   ========================================================================== */
+
+.cinematic-bg-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background-color: #080607;
+  contain: strict;
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ── Layer 1: 4-Scene Ken Burns Sequence ── */
+.cinematic-scenes-container {
+  position: absolute;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  overflow: hidden;
+}
+
+.cinematic-scene-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2000ms ease-in-out;
+  will-change: opacity;
+  z-index: 0;
+}
+
+.cinematic-scene-layer.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.cinematic-scene-layer.is-exiting {
+  opacity: 0;
+  z-index: 1;
+}
+
+.cinematic-scene-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 7000ms cubic-bezier(0.12, 0, 0.24, 1);
+  will-change: transform;
+  filter: brightness(0.72) saturate(1.15) contrast(1.1);
+  display: block;
+}
+
+/* ── 3D Camera Pan & Zoom Choreography ── */
+
+/* Scene 0: Palace Roses (Slow zoom-in + subtle elevation) */
+.kenburns-scene-0 {
+  transform: scale(1) translateY(0);
+}
+.kenburns-scene-0.is-animating {
+  transform: scale(1.10) translateY(-8px);
+}
+
+/* Scene 1: Macro Petals (Pullback + horizontal pan) */
+.kenburns-scene-1 {
+  transform: scale(1.12) translateX(8px);
+}
+.kenburns-scene-1.is-animating {
+  transform: scale(1.05) translateX(-8px);
+}
+
+/* Scene 2: Vision & Philosophy (Smooth diagonal zoom) */
+.kenburns-scene-2 {
+  transform: scale(1) translate(0, 0);
+}
+.kenburns-scene-2.is-animating {
+  transform: scale(1.10) translateX(8px) translateY(4px);
+}
+
+/* Scene 3: Royal Craftsmanship (Central slow push-in) */
+.kenburns-scene-3 {
+  transform: scale(1) translate(0, 0);
+}
+.kenburns-scene-3.is-animating {
+  transform: scale(1.12) translateX(-4px) translateY(-4px);
+}
+
+/* ── Layer 2: Floating Golden Dust Particles ── */
+.golden-dust-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.golden-dust-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF2B2 0%, #E5C158 60%, transparent 100%);
+  box-shadow: 0 0 6px rgba(229, 193, 88, 0.8), 0 0 12px rgba(212, 175, 55, 0.4);
+  animation: floatGoldenDust var(--duration, 8s) infinite ease-in-out var(--delay, 0s);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+@keyframes floatGoldenDust {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0) scale(0.6);
+  }
+  25% {
+    opacity: var(--max-opacity, 0.65);
+  }
+  75% {
+    opacity: var(--max-opacity, 0.65);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift, 18px), -70px, 0) scale(1.15);
+  }
+}
+
+/* ── Layer 3: Interactive Petal Canvas Simulation ── */
+.cinematic-petal-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  z-index: 3;
+  opacity: 0.85;
+}
+
+/* ── Layer 4: Cinematic Radial Vignette ── */
+.cinematic-vignette-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(8, 6, 7, 0.40) 0%, rgba(8, 6, 7, 0.92) 100%);
+}
+
+/* ── Layer 5: Vertical Seamless Header & Footer Blend Gradient ── */
+.cinematic-vertical-blend-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(180deg, #080607 0%, transparent 20%, transparent 80%, #080607 100%);
+}
+
+/* ── Layer 6: Film Grain Organic Noise Texture ── */
+.cinematic-grain-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* ── Reduced Motion Accessibility ── */
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-scene-img {
+    transition: none !important;
+    transform: scale(1) !important;
+  }
+  .cinematic-scene-layer {
+    transition: opacity 1000ms ease !important;
+  }
+  .golden-dust-container {
+    display: none !important;
+  }
+  .cinematic-petal-canvas {
+    display: none !important;
+  }
+}

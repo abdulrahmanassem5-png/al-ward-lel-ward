@@ -11,8 +11,8 @@ export default function WhatsAppConcierge() {
 
   const handleStartChat = () => {
     const text = isAr
-      ? 'مرحباً، أود استشارة منسق الزهور لمساعدتي في اختيار بوكيه مميز 🌹'
-      : 'Hello, I would like floral concierge advice for a special bouquet 🌹';
+      ? 'مرحباً بكم دار الورد للورد 🌹✨، يشرفني استشارة مستشار التنسيق الملكي لتفصيل بوكيه خاص لمناسبة سعيدة...'
+      : 'Hello Al-Ward Lel-Ward 🌹✨, I would like to consult the royal floral concierge for a special occasion...';
     window.open(`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -28,10 +28,10 @@ export default function WhatsAppConcierge() {
             </div>
             <div className="concierge-meta">
               <h4 className="concierge-title">
-                {isAr ? 'منسق زهور الورد للورد' : 'Master Floral Concierge'}
+                {isAr ? 'مستشار التنسيق الملكي ✦ الورد للورد' : 'Royal Floral Concierge'}
               </h4>
               <span className="concierge-status">
-                <Sparkles size={11} /> {isAr ? 'متصل الآن وجاهز لمساعدتك' : 'Online & ready to assist'}
+                <Sparkles size={11} /> {isAr ? 'في خدمة ذوقكم الرفيع الآن' : 'At your distinguished service'}
               </span>
             </div>
             <button
@@ -44,16 +44,16 @@ export default function WhatsAppConcierge() {
           </div>
 
           <div className="concierge-body">
-            <p className="concierge-bubble">
+            <p className="concierge-bubble font-poetic" style={{ fontSize: '1rem', lineHeight: '1.7' }}>
               {isAr
-                ? 'أهلاً بك في "الورد للورد"! 🌸 هل تحتاج مساعدة في اختيار البوكيه المثالي لمناسبتك أو حجز موعد توصيل؟'
-                : 'Welcome to Al-Ward Lel-Ward! 🌸 Need help choosing the perfect bouquet for your celebration?'}
+                ? 'مرحباً بك في دار «الورد للورد» الملكية 🌹✨.. يُسعدني مرافقتك لاختيار أو صياغة التحفة النباتية التي تعبر عن أسمى مشاعرك وتليق بمقام مناسبتك.'
+                : 'Welcome to Al-Ward Lel-Ward Atelier 🌹✨.. It is my honor to assist you in curating the floral masterpiece that articulates your deepest sentiments.'}
             </p>
           </div>
 
           <div className="concierge-footer">
             <button onClick={handleStartChat} className="concierge-send-btn">
-              <span>{isAr ? 'تحدث معنا عبر واتساب' : 'Chat on WhatsApp'}</span>
+              <span>{isAr ? 'بدء محادثة الكونسيرج الفورية' : 'Start Royal Consultation'}</span>
               <Send size={15} />
             </button>
           </div>

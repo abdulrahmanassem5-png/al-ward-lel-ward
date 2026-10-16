@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { STORE_INFO } from '../../../config/constants.js';
+import TiltCard from '../../common/TiltCard/TiltCard.jsx';
 import { Sparkles, ShoppingBag, MessageCircle, ArrowRight, ArrowLeft, ShieldCheck, HeartHandshake, Clock } from 'lucide-react';
 import './HeroSection.css';
 
 export default function HeroSection() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
 
   const handleWhatsAppCustom = () => {
@@ -25,38 +26,55 @@ export default function HeroSection() {
 
       <div className="hero-container container-wide">
         <div className="hero-content">
+          {/* Royal Brand Crest / Full Emblem */}
+          <div className="hero-full-emblem-badge animate-fade-in">
+            <div className="emblem-glow-ring" />
+            <img
+              src="/images/logo.jpg"
+              alt="الورد للورد - نصنع من الورد ذكرى"
+              className="hero-full-emblem-img"
+            />
+          </div>
+
           {/* Badge */}
           <div className="hero-badge animate-fade-in">
             <span className="badge-sparkle"><Sparkles size={14} /></span>
-            <span>{isAr ? 'حرفية يدوية فاخرة بأعلى معايير الجودة' : 'Luxury Handcrafted Floral Artistry'}</span>
+            <span>{isAr ? '✦ حيث تلتقي فخامة الورد الإكوادوري بعراقة الصياغة الملكية ✦' : '✦ Luxury Handcrafted Floral Artistry ✦'}</span>
           </div>
 
           {/* Heading */}
           <h1 className="hero-headline">
-            <span className="headline-sub">{isAr ? 'الورد للورد' : 'Al-Ward Lel-Ward'}</span>
+            <span className="headline-sub">{isAr ? 'الورد للورد • دار صياغة الزهور والمشاعر' : 'Al-Ward Lel-Ward • Haute Floristry Atelier'}</span>
             <span className="headline-main gradient-text-gold">
-              {isAr ? 'نصنع من الورد ذكرى' : 'We Craft Memories From Flowers'}
+              {isAr ? 'حين تَنطقُ الزهورُ بما يَعجزُ عنه البيان' : 'When Blooms Articulate What Words Cannot'}
             </span>
           </h1>
+
+          {/* Poetic Verse */}
+          <div className="hero-poetic-quote font-poetic">
+            {isAr
+              ? '«أتـاكَ الـوردُ مُختـالاً بأنـفـاسِ الصَّـباحِ ... ليـحكـي فـي سـكـونِ الـقلـبِ مـا عـجـزَ الـبيـان»'
+              : '«Where nature’s rarest wonders are sculpted into eternal sentiments»'}
+          </div>
 
           {/* Description */}
           <p className="hero-description">
             {isAr
-              ? 'نختار أجود الزهور الطبيعية الهولندية والإكوادورية لنصيغ منها تحفاً فنية تلهم قلوبكم وتخلد أجمل اللحظات والمناسبات السعيدة.'
-              : 'Hand-selected premium blossoms curated into bespoke floral masterpieces, immortalizing your most cherished moments with timeless elegance.'}
+              ? 'تحفٌ نباتية صِيغت بأنامل أمهر فناني التنسيق لتخليد أبهى لحظات العمر؛ ننتقي من أعالي جبال الإكوادور وبساتين هولندا أندر البتلات، لتهديها لمن يستحق بأناقة ملكية تليق بمقامكم.'
+              : 'Hand-selected premium blossoms from Ecuador and Holland curated into bespoke floral masterpieces, immortalizing your most cherished moments with timeless elegance.'}
           </p>
 
           {/* Actions */}
           <div className="hero-actions">
             <Link to="/shop" className="hero-btn primary-btn">
               <ShoppingBag size={18} />
-              <span>{isAr ? 'تصفح البوكيهات' : 'Explore Bouquets'}</span>
+              <span>{isAr ? 'استكشف الروائع الملكية' : 'Explore Bouquets'}</span>
               <ArrowIcon size={16} className="btn-arrow" />
             </Link>
 
             <button onClick={handleWhatsAppCustom} className="hero-btn secondary-btn">
               <MessageCircle size={18} className="wa-icon-glow" />
-              <span>{isAr ? 'طلب بوكيه مخصص' : 'Custom Bouquet'}</span>
+              <span>{isAr ? 'تحدث مع مستشار التنسيق' : 'Floral Concierge'}</span>
             </button>
           </div>
 
@@ -68,7 +86,7 @@ export default function HeroSection() {
               </div>
               <div>
                 <h4>100%</h4>
-                <p>{isAr ? 'زهور طبيعية طازجة' : 'Fresh Natural Blooms'}</p>
+                <p>{isAr ? 'زهور طبيعية وقطف الصباح' : 'Fresh Natural Blooms'}</p>
               </div>
             </div>
 
@@ -78,7 +96,7 @@ export default function HeroSection() {
               </div>
               <div>
                 <h4>+5,000</h4>
-                <p>{isAr ? 'بوكيه مصنوع بشغف' : 'Bouquets Crafted'}</p>
+                <p>{isAr ? 'تحفة صِيغت بأعلى معايير الشغف' : 'Bouquets Crafted'}</p>
               </div>
             </div>
 
@@ -87,40 +105,45 @@ export default function HeroSection() {
                 <Clock size={20} />
               </div>
               <div>
-                <h4>{isAr ? 'نفس اليوم' : 'Same Day'}</h4>
-                <p>{isAr ? 'توصيل مبرد سريع' : 'Chilled Express Delivery'}</p>
+                <h4>{isAr ? 'موكب مبرّد' : 'Same Day'}</h4>
+                <p>{isAr ? 'توصيل مكيّف يحفظ نضارة البتلات' : 'Chilled Express Delivery'}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Hero Visual Card */}
+        {/* Hero Visual Card with 3D Parallax Tilt */}
         <div className="hero-visual">
-          <div className="hero-visual-card glass">
-            <div className="visual-image-wrapper">
-              <img
-                src="/images/bouquet-save-the-date.jpg"
-                alt="Save The Date Luxury Bouquet"
-                className="hero-bouquet-img"
-              />
-              <div className="visual-overlay" />
-            </div>
-
-            <div className="floating-card-tag top-tag glass">
-              <span className="dot-pulse" />
-              <span>{isAr ? 'طلب مباشر وفوري' : 'Live Ordering Available'}</span>
-            </div>
-
-            <div className="floating-card-tag bottom-tag glass">
-              <div className="tag-details">
-                <span className="tag-title">{isAr ? 'طقم سيف ذا ديت الملكي' : 'Save The Date Luxury Set'}</span>
-                <span className="tag-rating">★ 5.0 (42 {isAr ? 'تقييم' : 'reviews'})</span>
+          <TiltCard maxTilt={6} glare={true} className="hero-tilt-wrapper">
+            <div className="hero-visual-card glass-royal-card shimmer-active">
+              <div className="visual-image-wrapper">
+                <img
+                  src="/images/bouquet-save-the-date.jpg"
+                  alt="Save The Date Luxury Bouquet"
+                  className="hero-bouquet-img"
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80';
+                  }}
+                />
+                <div className="visual-overlay" />
               </div>
-              <Link to="/product/1" className="tag-link">
-                <ArrowIcon size={16} />
-              </Link>
+
+              <div className="floating-card-tag top-tag glass">
+                <span className="dot-pulse" />
+                <span>{isAr ? 'قطف صباحي وتجهيز ملكي فوري ✦' : 'Fresh Harvest & Immediate VIP Prep ✦'}</span>
+              </div>
+
+              <div className="floating-card-tag bottom-tag glass">
+                <div className="tag-details">
+                  <span className="tag-title">{isAr ? 'طقم سيف ذا ديت الملكي' : 'Save The Date Luxury Set'}</span>
+                  <span className="tag-rating">★ 5.0 (42 {isAr ? 'تقييم موثق من النخبة' : 'elite reviews'})</span>
+                </div>
+                <Link to="/product/1" className="tag-link" title={isAr ? 'اكتشف التحفة' : 'Explore Masterpiece'}>
+                  <ArrowIcon size={16} />
+                </Link>
+              </div>
             </div>
-          </div>
+          </TiltCard>
         </div>
       </div>
     </section>

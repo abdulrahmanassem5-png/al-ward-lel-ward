@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CURRENCY, STORE_INFO } from '../../../config/constants.js';
 import { useNotification } from '../../../context/NotificationContext.jsx';
+import { deductMaterialsForOrder } from '../../../utils/recipeInventoryManager.js';
 import confetti from 'canvas-confetti';
 import {
   X,
@@ -14,6 +15,7 @@ import {
   Clock,
   ShieldCheck,
   Check,
+  Truck,
 } from 'lucide-react';
 import './QuickCheckoutDrawer.css';
 
@@ -89,6 +91,12 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
     };
 
     try {
+      deductMaterialsForOrder(newOrderRecord);
+    } catch (e) {
+      console.error('Error auto-deducting raw materials in QuickCheckout:', e);
+    }
+
+    try {
       const existing = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
       localStorage.setItem('al_ward_orders', JSON.stringify([newOrderRecord, ...existing]));
     } catch {
@@ -110,42 +118,57 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
     // Prepare WhatsApp Message
     const sizeName =
       selectedSize === 'small'
-        ? (isAr ? 'صغير' : 'Small')
+        ? (isAr ? 'الباقة الناعمة (Petite Charm) — لمسة رقيقة وأنيقة' : 'Petite Charm — Subtle Elegance')
         : selectedSize === 'large'
-        ? (isAr ? 'كبير (ملكي)' : 'Large (Royal)')
-        : (isAr ? 'متوسط (كلاسيك)' : 'Medium (Classic)');
+        ? (isAr ? 'الباقة الملكية الفاخرة (Royal VIP Grandeur) — ضعف كثافة الورد وحضور استثنائي' : 'Royal VIP Grandeur — Double Density & Grand Presence')
+        : (isAr ? 'الباقة الكلاسيكية (Signature Collection) — الحجم الأصلي المتوازن' : 'Signature Collection — Balanced Signature Classic');
 
     const deliveryTimeName =
       formData.deliveryTime === 'morning'
-        ? (isAr ? 'صباحي (10ص - 2ظ)' : 'Morning (10AM - 2PM)')
+        ? (isAr ? 'موكب صباحي (10ص - 2ظ)' : 'Morning (10AM - 2PM)')
         : formData.deliveryTime === 'rush'
-        ? (isAr ? 'فوري عاجل (خلال 3 ساعات)' : 'Rush (Within 3 Hours)')
-        : (isAr ? 'مسائي (4ع - 9م)' : 'Evening (4PM - 9PM)');
+        ? (isAr ? 'موكب فوري عاجل (خلال 3 ساعات)' : 'Rush (Within 3 Hours)')
+        : (isAr ? 'موكب مسائي (4ع - 9م)' : 'Evening (4PM - 9PM)');
 
     const text = isAr
-      ? `مرحباً، أود تأكيد طلب سريع للبوكيه من المتجر 🌹:\n` +
-        `• رقم الطلب: ${orderId}\n` +
-        `• البوكيه: ${product.name_ar}\n` +
-        `• الحجم: ${sizeName}\n` +
-        `• السعر الإجمالي: ${finalPrice} ${currencySymbol}\n` +
-        `• العميل: ${formData.name} (${formData.phone})\n` +
-        `• منطقة التوصيل: ${formData.district}\n` +
-        `• موعد التسليم: ${deliveryTimeName}\n` +
-        (formData.giftNote.trim() ? `• بطاقة الإهداء: "${formData.giftNote.trim()}"\n` : '') +
-        `\nأرجو تأكيد الاستلام والتجهيز، شكراً لكم!`
-      : `Hello, I'd like to confirm a quick bouquet order 🌹:\n` +
-        `• Order ID: ${orderId}\n` +
-        `• Bouquet: ${product.name_en}\n` +
-        `• Size: ${sizeName}\n` +
-        `• Total: ${finalPrice} ${currencySymbol}\n` +
-        `• Customer: ${formData.name} (${formData.phone})\n` +
-        `• Delivery Area: ${formData.district}\n` +
-        `• Delivery Window: ${deliveryTimeName}\n` +
-        (formData.giftNote.trim() ? `• Gift Note: "${formData.giftNote.trim()}"\n` : '');
+      ? `تحية طيبة تعبق بشذا الورد والريحان، دار «الورد للورد» الملكية 🌹✨\n` +
+        `يشرفني اعتماد طلب إهداء وصياغة تحفة زهور خاصة عبر المتجر:\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `👑 تفاصيل الإهداء الملكي:\n` +
+        `• رقم المرجع المعتمد: ${orderId}\n` +
+        `• التحفة النباتية: ${product.name_ar}\n` +
+        `• مقاس الباقة ومستوى الكثافة: ${sizeName}\n` +
+        `• القيمة الإجمالية الفاخرة: ${finalPrice} ${currencySymbol}\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `👤 بيانات صاحب الإهداء الكريم:\n` +
+        `• الاسم: ${formData.name}\n` +
+        `• رقم الهاتف: ${formData.phone}\n` +
+        `• وجهة موكب التوصيل: ${formData.district}\n` +
+        `• موعد التسليم المفضل: ${deliveryTimeName}\n` +
+        (formData.giftNote.trim() ? `• بطاقة الإهداء الملكية: «${formData.giftNote.trim()}»\n` : '') +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `أرجو التكرم من مستشار التنسيق الملكي بتأكيد بدء قطف الزهور وتجهيز الموكب، مع فائق الامتنان والتقدير لمقامكم الرفيع.`
+      : `Greetings with the essence of fresh blooms, Al-Ward Lel-Ward Royal Atelier 🌹✨\n` +
+        `I would like to confirm a royal floral dedication:\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `👑 Royal Dedication Details:\n` +
+        `• Reference ID: ${orderId}\n` +
+        `• Masterpiece: ${product.name_en}\n` +
+        `• Size & Density: ${sizeName}\n` +
+        `• Total Value: ${finalPrice} ${currencySymbol}\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `👤 Client Information:\n` +
+        `• Name: ${formData.name}\n` +
+        `• Phone: ${formData.phone}\n` +
+        `• Delivery Destination: ${formData.district}\n` +
+        `• Preferred Delivery Window: ${deliveryTimeName}\n` +
+        (formData.giftNote.trim() ? `• Dedication Note: «${formData.giftNote.trim()}»\n` : '') +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `Kindly have the master florist confirm preparation. Thank you for your distinguished service.`;
 
     window.open(`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
 
-    showSuccess(isAr ? 'تم إرسال تفاصيل طلبك للمنسق عبر واتساب! 🌹' : 'Order sent to florist on WhatsApp! 🌹');
+    showSuccess(isAr ? 'تم إرسال تفاصيل طلبك الملكي لمستشار الزهور عبر واتساب! 🌹' : 'Order sent to florist on WhatsApp! 🌹');
     onClose();
   };
 
@@ -159,9 +182,9 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
         <div className="quick-drawer-header">
           <div className="header-info">
             <span className="quick-tag">
-              <Sparkles size={14} /> {isAr ? 'طلب سريع بنقرة واحدة' : '1-Click Quick Order'}
+              <Sparkles size={14} /> {isAr ? 'خدمة الكونسيرج الملكية' : 'Royal Concierge Service'}
             </span>
-            <h2 className="drawer-title">{isAr ? 'تأكيد البوكيه عبر واتساب' : 'WhatsApp Bouquet Order'}</h2>
+            <h2 className="drawer-title">{isAr ? 'تأكيد الإهداء مع مستشار التنسيق' : 'Royal Concierge Order'}</h2>
           </div>
           <button onClick={onClose} className="btn-close-drawer" title={isAr ? 'إغلاق' : 'Close'}>
             <X size={20} />
@@ -180,9 +203,30 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
                 {finalPrice} <small>{currencySymbol}</small>
               </span>
               <span className="drawer-badge-express">
-                {isAr ? 'توصيل مبرد سريع' : 'Express Delivery'}
+                {isAr ? 'موكب مبرّد يحفظ النضارة' : 'Climate-Controlled Delivery'}
               </span>
             </div>
+          </div>
+        </div>
+
+        {/* VIP Free Chilled Delivery Progress Bar */}
+        <div className="drawer-free-shipping-bar glass">
+          <div className="free-shipping-text-row">
+            <span className="free-shipping-label">
+              <Truck size={15} className="truck-gold-icon" />
+              <span>
+                {finalPrice >= 1500
+                  ? (isAr ? 'تهانينا! هديتك مؤهلة لموكب التوصيل المبرّد VIP مجاناً 🚚✨' : 'Eligible for Complimentary VIP Chilled Delivery! 🚚✨')
+                  : (isAr ? `متبقي ${1500 - finalPrice} ${currencySymbol} للتأهل لموكب التوصيل المبرّد المجاني` : `Add ${1500 - finalPrice} ${currencySymbol} for Free VIP Delivery`)}
+              </span>
+            </span>
+            <span className="free-shipping-pct">{Math.min(100, Math.round((finalPrice / 1500) * 100))}%</span>
+          </div>
+          <div className="free-shipping-track">
+            <div
+              className="free-shipping-fill"
+              style={{ width: `${Math.min(100, Math.round((finalPrice / 1500) * 100))}%` }}
+            />
           </div>
         </div>
 
@@ -190,12 +234,30 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
         <form onSubmit={handleSubmit} className="drawer-form">
           {/* Size Choice */}
           <div className="drawer-field-group">
-            <label className="drawer-label">{isAr ? 'حجم البوكيه:' : 'Bouquet Size:'}</label>
+            <label className="drawer-label">{isAr ? 'فئة الحجم والكثافة الملكية:' : 'Royal Size & Density Tier:'}</label>
             <div className="drawer-size-chips">
               {[
-                { id: 'small', label_ar: 'صغير (-50 ج.م)', label_en: 'Small (-50)' },
-                { id: 'medium', label_ar: 'كلاسيك (متوسط)', label_en: 'Classic' },
-                { id: 'large', label_ar: 'ملكي كبير (+100 ج.م)', label_en: 'Royal (+100)' },
+                {
+                  id: 'small',
+                  title_ar: 'الباقة الناعمة (Petite Charm)',
+                  desc_ar: 'لمسة رقيقة وأنيقة (-50 ج.م)',
+                  title_en: 'Petite Charm',
+                  desc_en: 'Subtle elegance (-50 EGP)',
+                },
+                {
+                  id: 'medium',
+                  title_ar: 'الباقة الكلاسيكية (Signature Collection)',
+                  desc_ar: 'الحجم الأصلي المتوازن',
+                  title_en: 'Signature Collection',
+                  desc_en: 'Original balanced size',
+                },
+                {
+                  id: 'large',
+                  title_ar: 'الباقة الملكية الفاخرة (Royal VIP Grandeur)',
+                  desc_ar: 'ضعف كثافة الورد وحضور استثنائي (+100 ج.م)',
+                  title_en: 'Royal VIP Grandeur',
+                  desc_en: 'Double density & grandeur (+100 EGP)',
+                },
               ].map((s) => (
                 <button
                   type="button"
@@ -203,8 +265,11 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
                   onClick={() => setSelectedSize(s.id)}
                   className={`drawer-chip ${selectedSize === s.id ? 'active' : ''}`}
                 >
-                  {selectedSize === s.id && <Check size={14} className="chip-check" />}
-                  <span>{isAr ? s.label_ar : s.label_en}</span>
+                  <div className="chip-header">
+                    {selectedSize === s.id && <Check size={14} className="chip-check" />}
+                    <strong className="chip-title">{isAr ? s.title_ar : s.title_en}</strong>
+                  </div>
+                  <span className="chip-desc">{isAr ? s.desc_ar : s.desc_en}</span>
                 </button>
               ))}
             </div>
@@ -242,7 +307,7 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
 
           {/* District Area */}
           <div className="drawer-field-group">
-            <label className="drawer-label">{isAr ? 'منطقة التوصيل (القاهرة والجيزة)' : 'Delivery Area'}</label>
+            <label className="drawer-label">{isAr ? 'وجهة موكب التوصيل (القاهرة والجيزة):' : 'Delivery Destination:'}</label>
             <div className="drawer-input-wrap">
               <MapPin size={16} className="input-icon" />
               <select
@@ -259,45 +324,103 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Delivery Time Slot */}
+          {/* Delivery Time Window as Luxury Chips */}
           <div className="drawer-field-group">
-            <label className="drawer-label">{isAr ? 'موعد التوصيل المفضل:' : 'Delivery Time Window:'}</label>
-            <div className="drawer-input-wrap">
-              <Clock size={16} className="input-icon" />
-              <select
-                value={formData.deliveryTime}
-                onChange={(e) => setFormData((prev) => ({ ...prev, deliveryTime: e.target.value }))}
-              >
-                <option value="evening">{isAr ? 'مسائي (4 عصراً - 9 مساءً)' : 'Evening (4PM - 9PM)'}</option>
-                <option value="morning">{isAr ? 'صباحي (10 صباحاً - 2 ظهراً)' : 'Morning (10AM - 2PM)'}</option>
-                <option value="rush">{isAr ? 'توصيل عاجل بنفس اليوم (خلال 3 ساعات)' : 'Express Rush (within 3 hours)'}</option>
-              </select>
+            <label className="drawer-label">{isAr ? 'موعد انطلاق موكب التوصيل المفضل:' : 'Preferred Delivery Time Window:'}</label>
+            <div className="drawer-delivery-chips">
+              {[
+                {
+                  id: 'morning',
+                  icon: '🌅',
+                  title_ar: 'موكب صباحي (10ص - 2ظ)',
+                  sub_ar: 'قطف الصباح في ذروة النضارة',
+                  title_en: 'Morning (10AM - 2PM)',
+                  sub_en: 'Dewy morning harvest',
+                },
+                {
+                  id: 'evening',
+                  icon: '🌙',
+                  title_ar: 'موكب مسائي (4ع - 9م)',
+                  sub_ar: 'لحظات الغروب والاحتفال الدافئة',
+                  title_en: 'Evening (4PM - 9PM)',
+                  sub_en: 'Sunset celebrations & surprises',
+                },
+                {
+                  id: 'rush',
+                  icon: '⚡',
+                  title_ar: 'موكب VIP عاجل (3 ساعات)',
+                  sub_ar: 'تجهيز فوري وانطلاق استثنائي',
+                  title_en: 'VIP Express Rush (3h)',
+                  sub_en: 'Immediate priority dispatch',
+                },
+              ].map((slot) => (
+                <button
+                  type="button"
+                  key={slot.id}
+                  onClick={() => setFormData((prev) => ({ ...prev, deliveryTime: slot.id }))}
+                  className={`drawer-delivery-chip ${formData.deliveryTime === slot.id ? 'active' : ''}`}
+                >
+                  <span className="delivery-chip-icon">{slot.icon}</span>
+                  <div className="delivery-chip-text">
+                    <strong className="delivery-chip-title">{isAr ? slot.title_ar : slot.title_en}</strong>
+                    <small className="delivery-chip-sub">{isAr ? slot.sub_ar : slot.sub_en}</small>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Gift Dedication */}
+          {/* Gift Dedication Input */}
           <div className="drawer-field-group">
-            <label className="drawer-label">{isAr ? 'نص كارت الإهداء (اختياري):' : 'Gift Card Dedication (Optional):'}</label>
+            <label className="drawer-label">{isAr ? 'نص بطاقة الإهداء الملكية (اختياري):' : 'Gift Card Dedication (Optional):'}</label>
             <div className="drawer-input-wrap">
               <Gift size={16} className="input-icon" />
               <textarea
                 rows={2}
-                placeholder={isAr ? 'اكتب عبارة تهنئة رقيقة أو إهداء خاص يُرفق مع البوكيه...' : 'Write your sweet message or dedication...'}
+                placeholder={isAr ? 'اكتب ما يفيض به قلبك من كلمات وسنخطّها بمداد أنيق على ورق قطني...' : 'Write your heartfelt message and we will script it with elegance on cotton stationery...'}
                 value={formData.giftNote}
                 onChange={(e) => setFormData((prev) => ({ ...prev, giftNote: e.target.value }))}
+                className="drawer-gift-textarea font-poetic"
               />
+            </div>
+
+            {/* Live Royal Cotton Stationery & Wax Seal Preview */}
+            <div className="drawer-stationery-preview-wrap">
+              <div className="stationery-card">
+                <div className="stationery-card-header">
+                  <span className="stationery-header-title">
+                    <Sparkles size={12} />
+                    {isAr ? 'معاينة بطاقة الإهداء الملكية المذهبة (ورق قطني)' : 'Royal Stationery Dedication Preview'}
+                  </span>
+                  <span className="stationery-watermark">Al-Ward Atelier</span>
+                </div>
+                <div className="stationery-card-body font-poetic">
+                  <p className="stationery-card-text">
+                    «{formData.giftNote.trim() || (isAr ? 'نص إهدائكم الملكي سيُخط هنا بمداد ذهبي يليق بصدق مشاعركم...' : 'Your royal dedication will be inscribed here in gold calligraphy...')}»
+                  </p>
+                </div>
+                <div className="stationery-card-footer">
+                  <div className="wax-seal-badge" title={isAr ? 'ختم الشمع الملكي المعتمد' : 'Royal Wax Seal'}>
+                    <span>🌹</span>
+                  </div>
+                  <div className="stationery-seal-info">
+                    <span className="seal-title">{isAr ? 'مختومة بختم الشمع الملكي المذهب' : 'Sealed with Hand-Pressed Royal Wax'}</span>
+                    <small className="seal-sub">{isAr ? 'يُغلق به الظرف القطني لحفظ حرمة المشاعر' : 'Preserving feelings in velvet confidentiality'}</small>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Submit Direct Button */}
           <button type="submit" className="btn-drawer-whatsapp">
             <MessageCircle size={20} />
-            <span>{isAr ? `تأكيد وإرسال عبر واتساب • ${finalPrice} ${currencySymbol}` : `Confirm via WhatsApp • ${finalPrice} ${currencySymbol}`}</span>
+            <span>{isAr ? `اعتماد موكب الإهداء عبر واتساب • ${finalPrice} ${currencySymbol}` : `Confirm via WhatsApp • ${finalPrice} ${currencySymbol}`}</span>
           </button>
 
           <div className="drawer-guarantee-note">
             <ShieldCheck size={16} color="#34D399" />
-            <span>{isAr ? 'تأكيد مباشر مع منسق الزهور وتوصيل مبرد مضمون' : 'Live florist assistance & temperature-controlled delivery'}</span>
+            <span>{isAr ? 'تأكيد فوري مع مستشار التنسيق وموكب مبرّد يحفظ نضارة الورد' : 'Live florist assistance & temperature-controlled delivery'}</span>
           </div>
         </form>
       </div>

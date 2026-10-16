@@ -37,7 +37,7 @@ export default function QuickViewModal({ product, onClose }) {
       colors: ['#D4A853', '#E8C87A', '#C4546D', '#FFFFFF'],
     });
     showSuccess(
-      isAr ? `تمت إضافة (${quantity}) من "${name}" إلى السلة 🌹` : `Added ${quantity} of "${name}" to your cart 🌹`
+      isAr ? `تمت إضافة (${quantity}) من "${name}" إلى حقيبة الهدايا الملكية 🌹` : `Added ${quantity} of "${name}" to your gift bag 🌹`
     );
     setTimeout(() => setAdded(false), 2000);
   };
@@ -52,7 +52,7 @@ export default function QuickViewModal({ product, onClose }) {
 
   return (
     <div className="quick-view-overlay" onClick={onClose}>
-      <div className="quick-view-card glass" onClick={(e) => e.stopPropagation()}>
+      <div className="quick-view-card glass-royal-card shimmer-active" onClick={(e) => e.stopPropagation()}>
         <button className="quick-view-close" onClick={onClose} aria-label="Close modal">
           <X size={20} />
         </button>
@@ -67,7 +67,7 @@ export default function QuickViewModal({ product, onClose }) {
             />
             <div className="quick-view-badge">
               <Sparkles size={13} />
-              <span>{isAr ? 'صناعة يدوية فاخرة' : 'Handcrafted Luxury'}</span>
+              <span>{isAr ? 'صياغة يدوية ملكية نادرة' : 'Handcrafted Haute Floristry'}</span>
             </div>
           </div>
 
@@ -80,7 +80,7 @@ export default function QuickViewModal({ product, onClose }) {
                 ))}
               </div>
               <span className="qv-rating-text">{product.rating || 5.0}</span>
-              <span className="qv-reviews">({product.reviews_count || 30} {isAr ? 'تقييم موثق' : 'reviews'})</span>
+              <span className="qv-reviews">({product.reviews_count || 30} {isAr ? 'تقييم موثق من النخبة' : 'reviews'})</span>
             </div>
 
             <h2 className="qv-title">{name}</h2>
@@ -94,7 +94,7 @@ export default function QuickViewModal({ product, onClose }) {
                   {product.price} {currencySymbol}
                 </span>
               )}
-              <span className="qv-tax-tag">{isAr ? 'شامل كافة الرسوم' : 'All-inclusive'}</span>
+              <span className="qv-tax-tag">{isAr ? 'شامل التغليف الملكي' : 'Royal Packaging Included'}</span>
             </div>
 
             <p className="qv-desc">{desc}</p>
@@ -102,7 +102,7 @@ export default function QuickViewModal({ product, onClose }) {
             {/* Components Tags */}
             {components && components.length > 0 && (
               <div className="qv-components">
-                <span className="qv-comp-title">{isAr ? 'مكونات البوكيه:' : 'Bouquet Stems:'}</span>
+                <span className="qv-comp-title">{isAr ? 'مكونات الزهور الطبيعية:' : 'Bouquet Ingredients:'}</span>
                 <div className="qv-comp-tags">
                   {components.map((comp, idx) => (
                     <span key={idx} className="qv-tag">
@@ -144,25 +144,25 @@ export default function QuickViewModal({ product, onClose }) {
                 {added ? (
                   <>
                     <Check size={18} />
-                    <span>{isAr ? 'تمت الإضافة بنجاح!' : 'Added to Cart!'}</span>
+                    <span>{isAr ? 'أودعت في الحقيبة!' : 'Added to Gift Bag!'}</span>
                   </>
                 ) : (
                   <>
                     <ShoppingBag size={18} />
-                    <span>{isAr ? 'إضافة إلى السلة' : 'Add to Cart'}</span>
+                    <span>{isAr ? 'إيداع في حقيبة الهدايا' : 'Add to Gift Bag'}</span>
                   </>
                 )}
               </button>
 
               <button onClick={handleWhatsAppOrder} className="qv-wa-btn">
                 <MessageCircle size={18} />
-                <span>{isAr ? 'طلب عبر واتساب' : 'WhatsApp Order'}</span>
+                <span>{isAr ? 'طلب فوري عبر واتساب' : 'Royal WhatsApp Order'}</span>
               </button>
             </div>
 
             <div className="qv-footer-link">
               <Link to={`/product/${product.id}`} onClick={onClose} className="qv-full-link">
-                <span>{isAr ? 'الانتقال لصفحة البوكيه الكاملة' : 'View Full Bouquet Page'}</span>
+                <span>{isAr ? 'الانتقال لصفحة تفاصيل التحفة' : 'View Full Masterpiece Page'}</span>
                 <ArrowIcon size={15} />
               </Link>
             </div>
