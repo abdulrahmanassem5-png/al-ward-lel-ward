@@ -1,198 +1,703 @@
+/* ══════════════════════════════════════════════════════════════════
+   Contact Page — دار الورد للورد (Royal Dark & Gold Design System)
+   ══════════════════════════════════════════════════════════════════ */
+
 .contact-page {
-  padding-top: 120px;
-  padding-bottom: var(--space-4xl);
+  padding-top: 125px;
+  padding-bottom: 110px; /* Safe clearance for mobile viewports & floating actions */
   display: flex;
   flex-direction: column;
   gap: var(--space-2xl);
+  position: relative;
+  z-index: 10;
 }
 
+/* ─── Royal Editorial Header ─── */
 .contact-header {
   text-align: center;
-  max-width: 660px;
+  max-width: 780px;
   margin: 0 auto;
-}
-
-.contact-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: var(--gold-light);
-  font-weight: 600;
-  margin-bottom: var(--space-xs);
-}
-
-.contact-title {
-  font-size: clamp(2rem, 4vw, 2.8rem);
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: var(--space-xs);
-}
-
-.contact-desc {
-  color: var(--text-secondary);
-  font-size: 1.05rem;
-  line-height: 1.6;
-}
-
-.contact-grid {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: var(--space-2xl);
-}
-
-@media (max-width: 850px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.contact-card,
-.contact-form-card {
-  padding: var(--space-2xl);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.info-box-title,
-.form-box-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: var(--space-sm);
-}
-
-.info-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.info-entry {
-  display: flex;
   align-items: center;
   gap: 14px;
 }
 
-.info-icon-box {
+.contact-badge-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #E5C158;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.badge-crown {
+  color: #D4AF37;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.5));
+}
+
+.contact-title {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 900;
+  line-height: 1.25;
+  margin: 0;
+  background: linear-gradient(135deg, #FAF7F2 0%, #F3E5AB 50%, #D4AF37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(212, 175, 55, 0.2));
+}
+
+.contact-desc {
+  color: rgba(250, 247, 242, 0.78);
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  line-height: 1.8;
+  margin: 0;
+  max-width: 680px;
+}
+
+/* ─── Mobile Quick WhatsApp Banner ─── */
+.contact-mobile-quick-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(13, 59, 46, 0.85) 0%, rgba(7, 34, 27, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(13, 59, 46, 0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.quick-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quick-banner-avatar {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.quick-live-dot {
+  position: absolute;
+  bottom: 0;
+  inset-inline-end: 0;
+  width: 11px;
+  height: 11px;
+  background: #25D366;
+  border-radius: 50%;
+  border: 2px solid #07221B;
+}
+
+.quick-banner-text h4 {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #FAF7F2;
+}
+
+.quick-banner-text p {
+  margin: 2px 0 0;
+  font-size: 0.76rem;
+  color: rgba(250, 247, 242, 0.7);
+}
+
+.btn-mobile-quick-wa {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  flex-shrink: 0;
+}
+
+@media (max-width: 850px) {
+  .contact-mobile-quick-banner {
+    display: flex;
+  }
+}
+
+/* ─── Main Grid Layout (7 cols Form, 5 cols Sidebar) ─── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 990px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+/* ─── Luxury Glassmorphism Cards ─── */
+.contact-card,
+.contact-form-card {
+  padding: 36px 32px;
+  border-radius: 28px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgba(20, 18, 16, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(212, 175, 55, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-card::before,
+.contact-form-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.4) 50%, transparent 100%);
+}
+
+/* Sticky sidebar on desktop */
+@media (min-width: 991px) {
+  .contact-info-col {
+    position: sticky;
+    top: 110px;
+    height: fit-content;
+  }
+}
+
+/* ─── Card Headers ─── */
+.card-header-luxury {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.14);
+  padding-bottom: 18px;
+}
+
+.card-sparkle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #D4AF37;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-box-title,
+.form-box-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #FAF7F2;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.info-box-subtitle,
+.form-box-subtitle {
+  font-size: 0.88rem;
+  color: rgba(250, 247, 242, 0.6);
+  line-height: 1.5;
+  margin: 2px 0 0;
+}
+
+/* ─── Interactive Contact Rows (48px+ Touch Targets) ─── */
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-interactive-row {
+  min-height: 64px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.info-interactive-row:hover {
+  background: rgba(212, 175, 55, 0.08);
+  border-color: rgba(212, 175, 55, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(212, 175, 55, 0.1);
+}
+
+.info-interactive-row:active {
+  transform: scale(0.99);
+}
+
+.info-interactive-row.static-row {
+  cursor: default;
+}
+.info-interactive-row.static-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.06);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Specific WhatsApp Row Styling */
+.info-interactive-row.wa-row {
+  border-color: rgba(37, 211, 102, 0.25);
+  background: rgba(13, 59, 46, 0.15);
+}
+.info-interactive-row.wa-row:hover {
+  border-color: rgba(37, 211, 102, 0.6);
+  background: rgba(13, 59, 46, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(37, 211, 102, 0.2);
+}
+
+.row-icon-box {
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-md);
-  background: rgba(212, 168, 83, 0.1);
-  color: var(--gold-light);
+  border-radius: 12px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: #E5C158;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.25s ease;
 }
 
-.info-icon-box.wa-box {
-  background: rgba(37, 211, 102, 0.12);
+.row-icon-box.wa-icon-box {
+  position: relative;
+  background: rgba(37, 211, 102, 0.15);
+  border-color: rgba(37, 211, 102, 0.35);
   color: #25D366;
 }
 
-.info-entry label {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+.row-live-dot {
+  position: absolute;
+  top: -2px;
+  inset-inline-end: -2px;
+  width: 10px;
+  height: 10px;
+  background: #25D366;
+  border-radius: 50%;
+  border: 2px solid #141210;
+  box-shadow: 0 0 8px rgba(37, 211, 102, 0.8);
 }
 
-.info-entry span {
-  font-size: 0.95rem;
+.info-interactive-row:hover .row-icon-box {
+  transform: scale(1.08);
+  border-color: #D4AF37;
+  color: #FFFFFF;
+}
+
+.row-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.row-content label {
+  font-size: 0.78rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: rgba(250, 247, 242, 0.55);
+  cursor: pointer;
 }
 
-.btn-chat-wa {
+.row-badge-live {
+  font-size: 0.68rem;
+  color: #34D399;
+  font-weight: 700;
+  background: rgba(52, 211, 153, 0.15);
+  padding: 1px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.row-val {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #FAF7F2;
+  letter-spacing: 0.2px;
+}
+
+.row-subval {
+  font-size: 0.74rem;
+  color: #D4AF37;
+  font-weight: 500;
+}
+
+.row-action-arrow {
+  color: rgba(212, 175, 55, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.info-interactive-row:hover .row-action-arrow {
+  color: #E5C158;
+  transform: translateX(isAr ? -4px : 4px);
+}
+
+/* ─── Royal Emerald & Gold Concierge Button (Replaces neon green) ─── */
+.btn-royal-emerald-chat {
+  position: relative;
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0D3B2E 0%, #07221B 100%);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: #FAF7F2;
+  cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(13, 59, 46, 0.35);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 6px;
+}
+
+.btn-royal-emerald-chat:hover {
+  transform: translateY(-2px);
+  border-color: #D4AF37;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.7), 0 0 28px rgba(212, 175, 55, 0.25), 0 0 20px rgba(13, 59, 46, 0.6);
+}
+
+.btn-royal-emerald-chat:active {
+  transform: scale(0.985);
+}
+
+.btn-emerald-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.75s ease;
+  pointer-events: none;
+}
+
+.btn-royal-emerald-chat:hover .btn-emerald-shimmer {
+  left: 150%;
+}
+
+.btn-emerald-content {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  background: #25D366;
-  color: #0A0A0A;
+  position: relative;
+  z-index: 2;
+}
+
+.btn-emerald-icon {
+  color: #25D366;
+  filter: drop-shadow(0 0 6px rgba(37, 211, 102, 0.6));
+}
+
+.btn-emerald-text {
+  font-size: 0.96rem;
   font-weight: 700;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  transition: transform 0.2s ease;
-  margin-top: auto;
+  color: #FAF7F2;
+  letter-spacing: 0.2px;
 }
 
-.btn-chat-wa:hover {
-  transform: translateY(-2px);
+.btn-emerald-sparkle {
+  color: #E5C158;
 }
 
-/* Contact Form */
+/* ─── Contact Form Elements & Localization ─── */
 .contact-form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.contact-form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
-}
-
-@media (max-width: 600px) {
-  .contact-form-row {
-    grid-template-columns: 1fr;
-  }
+  gap: 8px;
 }
 
 .contact-form-group label {
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: rgba(250, 247, 242, 0.85);
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .contact-form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .contact-form-group input,
 .contact-form-group textarea {
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--border-subtle);
-  color: #fff;
+  min-height: 50px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: #FFFFFF;
   font-family: inherit;
-  font-size: 0.92rem;
+  font-size: 1rem; /* Crucial: 16px prevents iOS Safari auto-zoom on input focus */
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.contact-form-group textarea {
+  min-height: 120px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.contact-form-group input::placeholder,
+.contact-form-group textarea::placeholder {
+  color: rgba(250, 247, 242, 0.35);
+  font-size: 0.92rem;
 }
 
 .contact-form-group input:focus,
 .contact-form-group textarea:focus {
-  border-color: var(--gold-primary);
+  border-color: #D4AF37;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.4), 0 0 18px rgba(212, 175, 55, 0.15);
 }
 
-.btn-send-message {
+/* Input with Affix (Flag) */
+.input-with-affix {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+}
+
+.input-with-affix input {
+  width: 100%;
+  padding-inline-start: 44px;
+}
+
+.input-country-flag {
+  position: absolute;
+  inset-inline-start: 14px;
+  font-size: 1.25rem;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ─── Quick Topic Selection Pills ─── */
+.topic-header-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  background: var(--gold-gradient);
-  color: #0A0A0A;
-  font-weight: 800;
-  font-size: 1rem;
+}
+
+.topic-hint {
+  font-size: 0.76rem;
+  color: #D4AF37;
+  font-weight: 500;
+}
+
+.topic-pills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.topic-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  color: rgba(250, 247, 242, 0.85);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.topic-pill-btn:hover {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: #D4AF37;
+  color: #FAF7F2;
+  transform: translateY(-1px);
+}
+
+.topic-pill-btn.active {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(197, 155, 39, 0.35) 100%);
+  border-color: #D4AF37;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.25);
+  font-weight: 700;
+}
+
+.pill-check {
+  color: #E5C158;
+}
+
+/* ─── Primary Form Submit CTA Button ─── */
+.submit-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn-royal-gold-submit {
+  position: relative;
+  width: 100%;
+  min-height: 54px;
+  padding: 15px 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #C59B27 0%, #E5C158 50%, #C59B27 100%);
+  color: #0A0908;
   border: none;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.3);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(197, 155, 39, 0.35), 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.btn-send-message:hover {
+.btn-royal-gold-submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(212, 168, 83, 0.45);
+  box-shadow: 0 14px 34px rgba(212, 175, 55, 0.5), 0 0 24px rgba(212, 175, 55, 0.3);
 }
+
+.btn-royal-gold-submit:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.btn-royal-gold-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-gold-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.75s ease;
+  pointer-events: none;
+}
+
+.btn-royal-gold-submit:hover .btn-gold-shimmer {
+  left: 150%;
+}
+
+.btn-gold-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.privacy-note {
+  text-align: center;
+  font-size: 0.76rem;
+  color: rgba(250, 247, 242, 0.5);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Social VIP Pass Section ─── */
+.contact-social-section {
+  margin-top: 30px;
+}
+
+/* ─── Responsive Polish ─── */
+@media (max-width: 640px) {
+  .contact-page {
+    padding-top: 105px;
+    padding-bottom: 120px; /* Safe mobile clearance from bottom */
+    gap: 22px;
+  }
+
+  .contact-card,
+  .contact-form-card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .info-box-title,
+  .form-box-title {
+    font-size: 1.25rem;
+  }
+
+  .info-interactive-row {
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .row-icon-box {
+    width: 40px;
+    height: 40px;
+  }
+
+  .row-val {
+    font-size: 0.92rem;
+  }
+}
+
