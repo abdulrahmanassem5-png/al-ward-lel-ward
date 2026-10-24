@@ -1,5 +1,3 @@
-import { MOCK_PRODUCTS } from '../config/constants.js';
-
 // Master list of raw materials for haute floristry atelier
 export const MASTER_RAW_MATERIALS = [
   {
@@ -453,10 +451,72 @@ export function calculateOrderFinancials(order, inventory = null) {
   };
 }
 
-// 8. Deduct raw materials from inventory for an order (safe from duplicate deductions)
-export function deductMaterialsForOrder(order) {
+// 8. Check if raw materials in inventory are sufficient for an order
+export function checkOrderStockAvailability(order) {
+  if (!order || !order.items || !Array.isArray(order.items)) {
+    return { isAvailable: true, shortages: [] };
+  }
+
+  const inventory = getRawMaterialsInventory();
+  const rawMap = new Map(inventory.map((m) => [m.id, m]));
+  const recipes = getBouquetRecipes();
+  const neededTotals = new Map();
+
+  order.items.forEach((item) => {
+    const bouquetId = String(item.id);
+    const recipe = recipes[bouquetId] || DEFAULT_BOUQUET_RECIPES[bouquetId] || [
+      { raw_id: 'RAW-2', quantity: 10 },
+      { raw_id: 'RAW-11', quantity: 2 },
+      { raw_id: 'RAW-7', quantity: 2 },
+    ];
+    const orderQty = Number(item.quantity) || 1;
+
+    recipe.forEach((rec) => {
+      const prevNeeded = neededTotals.get(rec.raw_id) || 0;
+      neededTotals.set(rec.raw_id, prevNeeded + (Number(rec.quantity) || 0) * orderQty);
+    });
+  });
+
+  const shortages = [];
+  neededTotals.forEach((neededQty, rawId) => {
+    const raw = rawMap.get(rawId);
+    const available = raw ? Number(raw.quantity) : 0;
+    if (available < neededQty) {
+      shortages.push({
+        raw_id: rawId,
+        name_ar: raw ? raw.name_ar : 'خامة غير مسجلة',
+        name_en: raw ? raw.name_en : 'Unregistered Material',
+        unit_ar: raw ? raw.unit_ar : 'وحدة',
+        unit_en: raw ? raw.unit_en : 'unit',
+        needed: neededQty,
+        available,
+        shortage: neededQty - available,
+      });
+    }
+  });
+
+  return {
+    isAvailable: shortages.length === 0,
+    shortages,
+  };
+}
+
+// 9. Deduct raw materials from inventory for an order (safe from duplicate deductions)
+export function deductMaterialsForOrder(order, forceDeduct = false) {
   if (!order || !order.items || order.is_inventory_deducted) {
     return { success: false, reason: 'Already deducted or invalid order' };
+  }
+
+  // Pre-flight check unless forceDeduct is true
+  if (!forceDeduct) {
+    const availability = checkOrderStockAvailability(order);
+    if (!availability.isAvailable) {
+      return {
+        success: false,
+        reason: 'Insufficient inventory',
+        shortages: availability.shortages,
+      };
+    }
   }
 
   const inventory = getRawMaterialsInventory();
@@ -503,7 +563,7 @@ export function deductMaterialsForOrder(order) {
     });
   });
 
-  // Save updated inventory
+  // Save updated inventory and broadcast
   saveRawMaterialsInventory(inventory);
 
   // Calculate order financials and mark order as deducted
@@ -530,7 +590,66 @@ export function deductMaterialsForOrder(order) {
   };
 }
 
-// 9. Calculate overall analytics for orders (Total Revenue, Material Costs, Net Profit, Margin)
+// 10. Restore / Restock raw materials when an order is cancelled or reverted
+export function restoreMaterialsForOrder(order) {
+  if (!order || !order.items || !order.is_inventory_deducted) {
+    return { success: false, reason: 'Order was not deducted or invalid' };
+  }
+
+  const inventory = getRawMaterialsInventory();
+  const rawMap = new Map(inventory.map((m) => [m.id, m]));
+  const recipes = getBouquetRecipes();
+  const restorations = [];
+
+  order.items.forEach((item) => {
+    const bouquetId = String(item.id);
+    const recipe = recipes[bouquetId] || DEFAULT_BOUQUET_RECIPES[bouquetId] || [
+      { raw_id: 'RAW-2', quantity: 10 },
+      { raw_id: 'RAW-11', quantity: 2 },
+      { raw_id: 'RAW-7', quantity: 2 },
+    ];
+    const orderQty = Number(item.quantity) || 1;
+
+    recipe.forEach((rec) => {
+      const raw = rawMap.get(rec.raw_id);
+      if (raw) {
+        const qtyToRestore = (Number(rec.quantity) || 0) * orderQty;
+        raw.quantity += qtyToRestore;
+
+        restorations.push({
+          raw_id: raw.id,
+          name_ar: raw.name_ar,
+          unit_ar: raw.unit_ar,
+          restored: qtyToRestore,
+          new_quantity: raw.quantity,
+        });
+      }
+    });
+  });
+
+  // Save updated inventory & broadcast
+  saveRawMaterialsInventory(inventory);
+
+  order.is_inventory_deducted = false;
+  order.restored_at = new Date().toISOString();
+
+  // Update order in localStorage
+  try {
+    const local = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
+    const updated = local.map((o) => (o.id === order.id ? { ...o, ...order } : o));
+    localStorage.setItem('al_ward_orders', JSON.stringify(updated));
+  } catch (e) {
+    console.error('Error saving restored order to localStorage:', e);
+  }
+
+  return {
+    success: true,
+    restorations,
+    updatedInventory: inventory,
+  };
+}
+
+// 11. Calculate overall analytics for orders (Total Revenue, Material Costs, Net Profit, Margin)
 export function calculateOrdersAnalytics(orders = []) {
   let totalRevenue = 0;
   let totalMaterialCost = 0;

@@ -5,13 +5,12 @@ import ProductCard from '../../components/storefront/ProductCard/ProductCard.jsx
 import CategoryFilter from '../../components/storefront/CategoryFilter/CategoryFilter.jsx';
 import QuickViewModal from '../../components/storefront/QuickViewModal/QuickViewModal.jsx';
 import SEO from '../../components/SEO.tsx';
-import { MOCK_PRODUCTS, CATEGORIES } from '../../config/constants.js';
 import { getStoredProducts } from '../../utils/productStorageManager.js';
-import { Search, SlidersHorizontal, Sparkles, X, ArrowUpDown } from 'lucide-react';
+import { Search, Sparkles, X, ArrowUpDown } from 'lucide-react';
 import './ShopPage.css';
 
 export default function ShopPage() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isAr = i18n.language === 'ar';
 
@@ -20,12 +19,16 @@ export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('featured'); // 'featured', 'price-low', 'price-high', 'rating'
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [productsVersion, setProductsVersion] = useState(0);
+  const [allProducts, setAllProducts] = useState(() => getStoredProducts());
 
   useEffect(() => {
-    const handleSync = () => setProductsVersion((v) => v + 1);
+    const handleSync = () => setAllProducts(getStoredProducts());
     window.addEventListener('al_ward_products_updated', handleSync);
-    return () => window.removeEventListener('al_ward_products_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('al_ward_products_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
   }, []);
 
   const handleCategoryChange = (catId) => {
@@ -37,8 +40,6 @@ export default function ShopPage() {
     }
     setSearchParams(searchParams);
   };
-
-  const allProducts = useMemo(() => getStoredProducts(), [productsVersion]);
 
   const filteredProducts = useMemo(() => {
     let result = [...allProducts];
@@ -73,7 +74,7 @@ export default function ShopPage() {
     }
 
     return result;
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [allProducts, activeCategory, searchQuery, sortBy]);
 
   return (
     <div className="shop-page container-wide">

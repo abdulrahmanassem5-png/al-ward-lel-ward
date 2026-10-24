@@ -5,7 +5,7 @@ import { useCart } from '../../../context/CartContext.jsx';
 import { useNotification } from '../../../context/NotificationContext.jsx';
 import { useQuickCheckout } from '../../../context/QuickCheckoutContext.jsx';
 import TiltCard from '../../common/TiltCard/TiltCard.jsx';
-import { ShoppingBag, Star, MessageCircle, Eye, Zap, Clock, AlertTriangle } from 'lucide-react';
+import { ShoppingBag, Star, MessageCircle, Eye, Zap, Clock } from 'lucide-react';
 import { CURRENCY } from '../../../config/constants.js';
 import confetti from 'canvas-confetti';
 import './ProductCard.css';
@@ -45,11 +45,51 @@ export default function ProductCard({ product, onQuickView }) {
       const saved = localStorage.getItem('al_ward_products_stock');
       if (saved) {
         const map = JSON.parse(saved);
-        if (map[product.id] !== undefined) return map[product.id];
+        if (map && typeof map === 'object') {
+          if (Array.isArray(map)) {
+            const found = map.find((item) => String(item.productId || item.id) === String(product.id));
+            if (found && found.quantity !== undefined) return Number(found.quantity);
+          } else if (map[product.id] !== undefined) {
+            return Number(map[product.id]);
+          }
+        }
       }
     } catch {}
     return product.stock_quantity ?? 10;
   });
+
+  // Live stock sync across tabs and inventory events
+  useEffect(() => {
+    const handleStockSync = () => {
+      try {
+        const saved = localStorage.getItem('al_ward_products_stock');
+        if (saved) {
+          const map = JSON.parse(saved);
+          if (map && typeof map === 'object') {
+            if (Array.isArray(map)) {
+              const found = map.find((item) => String(item.productId || item.id) === String(product.id));
+              if (found && found.quantity !== undefined) {
+                setStockQty(Number(found.quantity));
+                return;
+              }
+            } else if (map[product.id] !== undefined) {
+              setStockQty(Number(map[product.id]));
+              return;
+            }
+          }
+        }
+      } catch {}
+    };
+
+    window.addEventListener('storage', handleStockSync);
+    window.addEventListener('al_ward_raw_inventory_updated', handleStockSync);
+    window.addEventListener('al_ward_products_updated', handleStockSync);
+    return () => {
+      window.removeEventListener('storage', handleStockSync);
+      window.removeEventListener('al_ward_raw_inventory_updated', handleStockSync);
+      window.removeEventListener('al_ward_products_updated', handleStockSync);
+    };
+  }, [product.id]);
 
   // Live Countdown Timer
   useEffect(() => {

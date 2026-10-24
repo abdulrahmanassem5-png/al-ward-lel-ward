@@ -5,6 +5,8 @@ import { useNotification } from '../../context/NotificationContext.jsx';
 import {
   calculateOrderFinancials,
   deductMaterialsForOrder,
+  restoreMaterialsForOrder,
+  checkOrderStockAvailability,
   calculateOrdersAnalytics,
 } from '../../utils/recipeInventoryManager.js';
 import {
@@ -16,9 +18,7 @@ import {
   TrendingUp,
   Scissors,
   DollarSign,
-  Boxes,
   CheckCircle2,
-  AlertCircle,
   Sparkles,
 } from 'lucide-react';
 import './OrdersPage.css';
@@ -70,6 +70,19 @@ export default function OrdersPage() {
       return;
     }
 
+    const availability = checkOrderStockAvailability(targetOrder);
+    if (!availability.isAvailable) {
+      const shortageNames = availability.shortages
+        .map((s) => `${isAr ? s.name_ar : s.name_en} (عجز: ${s.shortage})`)
+        .join('، ');
+      showError(
+        isAr
+          ? `رصيد المستودع غير كافٍ لإنتاج هذا الطلب: ${shortageNames}`
+          : `Insufficient stock for order: ${shortageNames}`
+      );
+      return;
+    }
+
     const res = deductMaterialsForOrder(targetOrder);
     if (res.success) {
       setOrders((prev) =>
@@ -88,24 +101,74 @@ export default function OrdersPage() {
       }
       showSuccess(
         isAr
-          ? `تم خصم خامات الطلب (#${orderId}) من رصيد المخزون بنجاح 🌿`
+          ? `تم خصم خامات الطلب (#${orderId}) من رصيد المستودع بنجاح 🌿`
           : `Order #${orderId} raw materials deducted from inventory! 🌿`
       );
+    } else {
+      showError(res.reason || (isAr ? 'تعذر خصم الخامات' : 'Failed to deduct materials'));
     }
   };
 
   const handleStatusChange = (orderId, newStatus) => {
-    const updated = orders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o));
+    const targetOrder = orders.find((o) => o.id === orderId);
+    if (!targetOrder) return;
+
+    let updatedOrder = { ...targetOrder, status: newStatus };
+
+    // 1. If cancelling an order that was previously deducted, restore materials to inventory
+    if (newStatus === 'cancelled' && targetOrder.is_inventory_deducted) {
+      const rollbackRes = restoreMaterialsForOrder(targetOrder);
+      if (rollbackRes.success) {
+        updatedOrder.is_inventory_deducted = false;
+        showSuccess(
+          isAr
+            ? `تم إلغاء الطلب واسترجاع كافة الخامات المخصومة (${rollbackRes.restorations?.length || 0}) إلى رصيد المستودع 🌿`
+            : `Order cancelled and materials restored to inventory! 🌿`
+        );
+      }
+    }
+
+    // 2. If moving to processing/completed and not yet deducted, check availability & auto-deduct
+    if ((newStatus === 'processing' || newStatus === 'completed') && !targetOrder.is_inventory_deducted) {
+      const availability = checkOrderStockAvailability(targetOrder);
+      if (!availability.isAvailable) {
+        const shortageNames = availability.shortages
+          .map((s) => `${isAr ? s.name_ar : s.name_en} (-${s.shortage})`)
+          .join('، ');
+        showError(
+          isAr
+            ? `تنبيه نقص المخزون: لا توجد خامات كافية لتجهيز الطلب (${shortageNames})`
+            : `Warning: Insufficient materials (${shortageNames})`
+        );
+      } else {
+        const deductRes = deductMaterialsForOrder(targetOrder);
+        if (deductRes.success) {
+          updatedOrder.is_inventory_deducted = true;
+          updatedOrder.financials = deductRes.financials;
+          showSuccess(
+            isAr
+              ? `تم تحديث الحالة لـ (${newStatus}) وخصم الخامات من المستودع بنجاح 🌿`
+              : `Order status set to ${newStatus} & materials deducted!`
+          );
+        }
+      }
+    }
+
+    const updated = orders.map((o) => (o.id === orderId ? updatedOrder : o));
     setOrders(updated);
 
     // Update in selected order modal if open
     if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder({ ...selectedOrder, status: newStatus });
+      setSelectedOrder(updatedOrder);
     }
 
-    const local = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
-    const modifiedLocal = local.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o));
-    localStorage.setItem('al_ward_orders', JSON.stringify(modifiedLocal));
+    try {
+      const local = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
+      const modifiedLocal = local.map((o) => (o.id === orderId ? { ...o, ...updatedOrder } : o));
+      localStorage.setItem('al_ward_orders', JSON.stringify(modifiedLocal));
+    } catch (e) {
+      console.error('Error saving updated order status:', e);
+    }
 
     showSuccess(isAr ? `تم تحديث حالة الطلب إلى (${newStatus}) بنجاح` : `Order status updated to ${newStatus}`);
   };

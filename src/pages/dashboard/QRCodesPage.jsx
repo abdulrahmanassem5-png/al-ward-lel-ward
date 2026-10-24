@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
 import { toPng } from 'html-to-image';
-import { MOCK_PRODUCTS, STORE_INFO, CURRENCY } from '../../config/constants.js';
+import { STORE_INFO, CURRENCY } from '../../config/constants.js';
 import { useNotification } from '../../context/NotificationContext.jsx';
+import { getStoredProducts } from '../../utils/productStorageManager.js';
 import CinematicBackground from '../../components/common/CinematicBackground/CinematicBackground.jsx';
 import {
   Printer,
@@ -11,41 +12,45 @@ import {
   Sparkles,
   Copy,
   Check,
-  Flower2,
-  Heart,
-  Award,
   Film,
   Mic,
   Image as ImageIcon,
   Link as LinkIcon,
-  CheckCircle2,
   Crown,
   Download,
 } from 'lucide-react';
 import './QRCodesPage.css';
 
 export default function QRCodesPage() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { showSuccess } = useNotification();
   const isAr = i18n.language === 'ar';
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
 
-  const [qrValue, setQrValue] = useState('https://alwardlelward.com/dedication/123');
+  const productsList = getStoredProducts();
+  const initialProduct = productsList[0];
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://alwardlelward.com';
+
+  const [selectedProduct, setSelectedProduct] = useState(initialProduct?.id || '1');
+  const [qrValue, setQrValue] = useState(`${origin}/product/${initialProduct?.id || '1'}`);
   const [recipient, setRecipient] = useState('سارة الغالية');
   const [sender, setSender] = useState('محمد');
   const [personalNote, setPersonalNote] = useState(
     'كل عام وأنتِ زهرة أيامي وسر سعادتي، عهدٌ محفورٌ بالورد أن تبقي دائماً الأغلى والأقرب لقلبي 🌹✨'
   );
-  const [selectedProduct, setSelectedProduct] = useState(MOCK_PRODUCTS[0]?.id || '1');
   const [colorTheme, setColorTheme] = useState('gold'); // 'gold' | 'ivory' | 'burgundy' | 'parchment'
-  const [cardFormat, setCardFormat] = useState('tag'); // 'tag' | 'card'
   const [dedicationType, setDedicationType] = useState('video'); // 'video' | 'audio' | 'album' | 'link'
   const [showWaxSeal, setShowWaxSeal] = useState(true);
   const [showLogo, setShowLogo] = useState(true);
   const [copied, setCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const bouquet = MOCK_PRODUCTS.find((p) => p.id === selectedProduct) || MOCK_PRODUCTS[0];
+  const bouquet = productsList.find((p) => p.id === selectedProduct) || productsList[0];
+
+  const handleProductSelect = (prodId) => {
+    setSelectedProduct(prodId);
+    setQrValue(`${origin}/product/${prodId}`);
+  };
 
   const handlePrint = () => {
     window.print();
@@ -61,6 +66,7 @@ export default function QRCodesPage() {
         quality: 0.98,
         pixelRatio: 2, // 2x retina high-resolution
         cacheBust: true,
+        skipFonts: false,
       });
 
       const link = document.createElement('a');
@@ -168,10 +174,10 @@ export default function QRCodesPage() {
               <label>{isAr ? 'البوكيه المرفق بالكرت' : 'Associated Bouquet'}</label>
               <select
                 value={selectedProduct}
-                onChange={(e) => setSelectedProduct(e.target.value)}
+                onChange={(e) => handleProductSelect(e.target.value)}
                 className="qr-select"
               >
-                {MOCK_PRODUCTS.map((p) => (
+                {productsList.map((p) => (
                   <option key={p.id} value={p.id}>
                     {isAr ? p.name_ar : p.name_en} ({p.sale_price || p.price} {currencySymbol})
                   </option>

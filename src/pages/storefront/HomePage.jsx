@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import HeroSection from '../../components/storefront/HeroSection/HeroSection.jsx';
@@ -8,7 +8,6 @@ import QuickViewModal from '../../components/storefront/QuickViewModal/QuickView
 import TiltCard from '../../components/common/TiltCard/TiltCard.jsx';
 import SEO from '../../components/SEO.tsx';
 import { useQuickCheckout } from '../../context/QuickCheckoutContext.jsx';
-import { useNotification } from '../../context/NotificationContext.jsx';
 import confetti from 'canvas-confetti';
 import { MOCK_PRODUCTS, CATEGORIES, MOCK_TESTIMONIALS, STORE_INFO, CURRENCY } from '../../config/constants.js';
 import { getStoredProducts } from '../../utils/productStorageManager.js';
@@ -48,15 +47,18 @@ export default function HomePage() {
 
   const [activeCategory, setActiveCategory] = useState('all');
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [productsVersion, setProductsVersion] = useState(0);
+  const [allProducts, setAllProducts] = useState(() => getStoredProducts());
 
   useEffect(() => {
-    const handleSync = () => setProductsVersion((v) => v + 1);
+    const handleSync = () => setAllProducts(getStoredProducts());
     window.addEventListener('al_ward_products_updated', handleSync);
-    return () => window.removeEventListener('al_ward_products_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('al_ward_products_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
   }, []);
 
-  const allProducts = useMemo(() => getStoredProducts(), [productsVersion]);
   const flagshipProduct = allProducts[0] || MOCK_PRODUCTS[0];
 
   // Live active offer on flagship spotlight
@@ -69,27 +71,30 @@ export default function HomePage() {
         const stored = localStorage.getItem('al_ward_offers');
         if (stored) {
           const offers = JSON.parse(stored);
-          const active = offers.find(
-            (o) => o.productId === flagshipProduct.id && o.status === 'active'
-          );
-          if (active) {
-            const end = new Date(active.endDate).getTime();
-            const now = Date.now();
-            const diff = end - now;
-            if (diff > 0) {
-              const hours = Math.floor(diff / (1000 * 60 * 60));
-              const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-              const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-              const pad = (n) => String(n).padStart(2, '0');
-              setSpotlightTimeLeft(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
-              setSpotlightOffer(active);
+          if (Array.isArray(offers)) {
+            const active = offers.find(
+              (o) => String(o.productId) === String(flagshipProduct.id) && (o.isActive === true || o.status === 'active')
+            );
+            if (active) {
+              const expiryDate = active.expiresAt || active.endDate;
+              const end = expiryDate ? new Date(expiryDate).getTime() : 0;
+              const now = Date.now();
+              const diff = end - now;
+              if (diff > 0) {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                const pad = (n) => String(n).padStart(2, '0');
+                setSpotlightTimeLeft(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
+                setSpotlightOffer(active);
+              } else {
+                setSpotlightOffer(null);
+                setSpotlightTimeLeft(null);
+              }
             } else {
               setSpotlightOffer(null);
               setSpotlightTimeLeft(null);
             }
-          } else {
-            setSpotlightOffer(null);
-            setSpotlightTimeLeft(null);
           }
         }
       } catch (err) {

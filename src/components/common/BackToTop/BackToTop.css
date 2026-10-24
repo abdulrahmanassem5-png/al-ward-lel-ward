@@ -24,3 +24,10 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(212, 168, 83, 0.4);
 }
+
+@media (max-width: 768px) {
+  .back-to-top-btn {
+    bottom: 92px;
+  }
+}
+

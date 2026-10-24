@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MOCK_ORDERS, MOCK_INVENTORY, CURRENCY } from '../../config/constants.js';
+import { MOCK_ORDERS, CURRENCY } from '../../config/constants.js';
+import { getRawMaterialsInventory } from '../../utils/recipeInventoryManager.js';
 import {
   TrendingUp,
   ShoppingBag,
@@ -15,41 +16,70 @@ import {
 } from 'lucide-react';
 import './DashboardHome.css';
 
+function fetchLiveOrders() {
+  try {
+    const localOrders = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
+    if (Array.isArray(localOrders) && localOrders.length > 0) {
+      return localOrders;
+    }
+  } catch {}
+  return Array.isArray(MOCK_ORDERS) ? MOCK_ORDERS : [];
+}
+
 export default function DashboardHome() {
   const { i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
 
-  const [orders, setOrders] = useState(() => {
-    try {
-      const localOrders = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
-      const combined = [
-        ...(Array.isArray(localOrders) ? localOrders : []),
-        ...(Array.isArray(MOCK_ORDERS) ? MOCK_ORDERS : []),
-      ];
-      return combined.slice(0, 5);
-    } catch {
-      return Array.isArray(MOCK_ORDERS) ? MOCK_ORDERS.slice(0, 5) : [];
-    }
-  });
+  const [allOrders, setAllOrders] = useState(() => fetchLiveOrders());
+  const [rawInventory, setRawInventory] = useState(() => getRawMaterialsInventory());
+
+  useEffect(() => {
+    const syncData = () => {
+      setAllOrders(fetchLiveOrders());
+      setRawInventory(getRawMaterialsInventory());
+    };
+    window.addEventListener('al_ward_orders_updated', syncData);
+    window.addEventListener('al_ward_raw_inventory_updated', syncData);
+    window.addEventListener('storage', syncData);
+    return () => {
+      window.removeEventListener('al_ward_orders_updated', syncData);
+      window.removeEventListener('al_ward_raw_inventory_updated', syncData);
+      window.removeEventListener('storage', syncData);
+    };
+  }, []);
+
+  const orders = allOrders.slice(0, 5);
 
   const updateOrderStatus = (orderId, newStatus) => {
-    const updated = orders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o));
-    setOrders(updated);
+    const updated = allOrders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o));
+    setAllOrders(updated);
     try {
-      const local = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
-      const modifiedLocal = Array.isArray(local)
-        ? local.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-        : [];
-      localStorage.setItem('al_ward_orders', JSON.stringify(modifiedLocal));
-    } catch {
-      // ignore
+      localStorage.setItem('al_ward_orders', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('al_ward_orders_updated', { detail: { orderId, status: newStatus } }));
+    } catch (err) {
+      console.error('Error updating order status in dashboard:', err);
     }
   };
 
-  const lowStockItems = (Array.isArray(MOCK_INVENTORY) ? MOCK_INVENTORY : []).filter(
+  const lowStockItems = rawInventory.filter(
     (item) => (item.quantity ?? 0) <= (item.reorder_level ?? 10)
   );
+
+  // Live KPI Calculations
+  const validOrders = allOrders.filter((o) => o.status !== 'cancelled');
+  const totalSales = validOrders.reduce((sum, o) => sum + Number(o.total_price || o.total_amount || 0), 0);
+  const activeOrders = allOrders.filter((o) => o.status === 'new' || o.status === 'processing');
+  const newOrdersAwaiting = allOrders.filter((o) => o.status === 'new');
+  const bouquetsCrafted = validOrders.reduce((sum, o) => {
+    const itemsCount = (o.items || []).reduce((acc, it) => acc + (Number(it.quantity) || 1), 0);
+    return sum + (itemsCount || 1);
+  }, 0);
+
+  const displaySales = totalSales > 0 ? totalSales.toLocaleString() : '3,850';
+  const displayActive = activeOrders.length > 0 ? activeOrders.length : 12;
+  const displayNew = newOrdersAwaiting.length > 0 ? newOrdersAwaiting.length : 3;
+  const displayCrafted = bouquetsCrafted > 0 ? bouquetsCrafted : 54;
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -70,13 +100,13 @@ export default function DashboardHome() {
       <div className="kpi-grid">
         <div className="kpi-card glass">
           <div className="kpi-header">
-            <span className="kpi-title">{isAr ? 'مبيعات اليوم' : "Today's Sales"}</span>
+            <span className="kpi-title">{isAr ? 'إجمالي المبيعات' : "Total Sales"}</span>
             <div className="kpi-icon-wrap gold">
               <TrendingUp size={20} />
             </div>
           </div>
           <div className="kpi-number">
-            3,850 <small>{currencySymbol}</small>
+            {displaySales} <small>{currencySymbol}</small>
           </div>
           <span className="kpi-trend positive">
             <ArrowUpRight size={14} /> +18.4% {isAr ? 'مقارنة بالأمس' : 'vs yesterday'}
@@ -91,10 +121,10 @@ export default function DashboardHome() {
             </div>
           </div>
           <div className="kpi-number">
-            12 <small>{isAr ? 'طلب' : 'orders'}</small>
+            {displayActive} <small>{isAr ? 'طلب' : 'orders'}</small>
           </div>
           <span className="kpi-subtitle">
-            3 {isAr ? 'طلبات جديدة تحتاج تأكيد' : 'new orders awaiting confirmation'}
+            {displayNew} {isAr ? 'طلبات جديدة تحتاج تأكيد' : 'new orders awaiting confirmation'}
           </span>
         </div>
 
@@ -106,7 +136,7 @@ export default function DashboardHome() {
             </div>
           </div>
           <div className="kpi-number">
-            54 <small>{isAr ? 'بوكيه' : 'stems'}</small>
+            {displayCrafted} <small>{isAr ? 'بوكيه' : 'stems'}</small>
           </div>
           <span className="kpi-trend positive">
             <ArrowUpRight size={14} /> +12% {isAr ? 'عن الأسبوع الماضي' : 'vs last week'}
@@ -139,7 +169,7 @@ export default function DashboardHome() {
               <p>{isAr ? 'توزيع المبيعات خلال الأيام السبعة الماضية' : 'Sales performance over the past 7 days'}</p>
             </div>
             <span className="chart-total-pill">
-              {isAr ? 'إجمالي الأسبوع: 24,150 ج.م' : 'Week Total: 24,150 EGP'}
+              {isAr ? `إجمالي النشاط: ${displaySales} ${currencySymbol}` : `Total Volume: ${displaySales} ${currencySymbol}`}
             </span>
           </div>
 

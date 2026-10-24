@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CURRENCY, STORE_INFO } from '../../config/constants.js';
 import { useNotification } from '../../context/NotificationContext.jsx';
@@ -6,15 +6,9 @@ import {
   Users,
   Search,
   MessageCircle,
-  Award,
   TrendingUp,
-  ShoppingBag,
   Star,
   Plus,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
   X,
 } from 'lucide-react';
 import './CustomersPage.css';
@@ -77,13 +71,86 @@ const MOCK_CUSTOMERS = [
   },
 ];
 
+function getMergedCustomers() {
+  const manualCustomers = (() => {
+    try {
+      const saved = localStorage.getItem('al_ward_customers');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // fallback
+    }
+    return [];
+  })();
+
+  const orders = (() => {
+    try {
+      const saved = localStorage.getItem('al_ward_orders');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // fallback
+    }
+    return [];
+  })();
+
+  const map = new Map();
+
+  // Seed default atelier mock customers
+  MOCK_CUSTOMERS.forEach((c) => {
+    map.set(c.phone || c.id, { ...c });
+  });
+
+  // Merge manual stored customers
+  if (Array.isArray(manualCustomers)) {
+    manualCustomers.forEach((c) => {
+      const key = c.phone || c.id;
+      map.set(key, { ...c });
+    });
+  }
+
+  // Aggregate live customers from orders
+  if (Array.isArray(orders)) {
+    orders.forEach((o) => {
+      const phone = o.customer_phone || o.phone || '';
+      const name = o.customer_name || o.senderName || o.name || 'عميل المتجر';
+      const total = Number(o.total_price || o.total_amount || 0);
+      const date = (o.created_at || '').split('T')[0] || '2026-10-24';
+      const city = o.city ? `${o.city}${o.district ? ` - ${o.district}` : ''}` : (o.delivery_address || 'القاهرة');
+
+      const key = phone || `ORDER-${o.id}`;
+      if (map.has(key)) {
+        const existing = map.get(key);
+        existing.orders_count = (existing.orders_count || 1) + 1;
+        existing.total_spent = (existing.total_spent || 0) + total;
+        existing.last_order = date;
+        if (existing.total_spent > 3000 || existing.orders_count >= 3) {
+          existing.is_vip = true;
+        }
+      } else {
+        map.set(key, {
+          id: `CUST-${o.id || Math.floor(1000 + Math.random() * 9000)}`,
+          name,
+          phone,
+          email: o.email || `${phone || 'client'}@alward.vip`,
+          city,
+          orders_count: 1,
+          total_spent: total,
+          last_order: date,
+          is_vip: total > 2000,
+        });
+      }
+    });
+  }
+
+  return Array.from(map.values());
+}
+
 export default function CustomersPage() {
   const { i18n } = useTranslation();
   const { showSuccess } = useNotification();
   const isAr = i18n.language === 'ar';
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
 
-  const [customers, setCustomers] = useState(MOCK_CUSTOMERS);
+  const [customers, setCustomers] = useState(() => getMergedCustomers());
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCustomer, setNewCustomer] = useState({
@@ -92,6 +159,20 @@ export default function CustomersPage() {
     email: '',
     city: 'القاهرة',
   });
+
+  useEffect(() => {
+    const refreshCustomers = () => {
+      setCustomers(getMergedCustomers());
+    };
+    window.addEventListener('al_ward_orders_updated', refreshCustomers);
+    window.addEventListener('al_ward_customers_updated', refreshCustomers);
+    window.addEventListener('storage', refreshCustomers);
+    return () => {
+      window.removeEventListener('al_ward_orders_updated', refreshCustomers);
+      window.removeEventListener('al_ward_customers_updated', refreshCustomers);
+      window.removeEventListener('storage', refreshCustomers);
+    };
+  }, []);
 
   const handleWhatsAppCustomer = (customer) => {
     const text = isAr
@@ -115,9 +196,19 @@ export default function CustomersPage() {
       last_order: isAr ? 'جديد' : 'New',
       is_vip: false,
     };
-    setCustomers([created, ...customers]);
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('al_ward_customers') || '[]');
+      const updated = [created, ...existing];
+      localStorage.setItem('al_ward_customers', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('al_ward_customers_updated', { detail: created }));
+    } catch (err) {
+      console.error('Failed to save customer in storage:', err);
+    }
+
+    setCustomers(getMergedCustomers());
     setShowAddModal(false);
-    showSuccess(isAr ? 'تمت إضافة العميل الجديد بنجاح' : 'New customer added successfully');
+    showSuccess(isAr ? 'تمت إضافة العميل الجديد بنجاح وحفظه في النظام' : 'New customer added and saved successfully');
     setNewCustomer({ name: '', phone: '', email: '', city: 'القاهرة' });
   };
 

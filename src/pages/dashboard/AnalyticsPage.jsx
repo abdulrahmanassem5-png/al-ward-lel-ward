@@ -1,12 +1,53 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CURRENCY, MOCK_PRODUCTS } from '../../config/constants.js';
-import { TrendingUp, Award, ArrowUpRight } from 'lucide-react';
+import { CURRENCY, MOCK_ORDERS } from '../../config/constants.js';
+import { getStoredProducts } from '../../utils/productStorageManager.js';
+import { Award, ArrowUpRight } from 'lucide-react';
 import './AnalyticsPage.css';
+
+function fetchOrdersForAnalytics() {
+  try {
+    const local = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
+    if (Array.isArray(local) && local.length > 0) return local;
+  } catch {}
+  return Array.isArray(MOCK_ORDERS) ? MOCK_ORDERS : [];
+}
 
 export default function AnalyticsPage() {
   const { i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
+
+  const [orders, setOrders] = useState(() => fetchOrdersForAnalytics());
+  const [products, setProducts] = useState(() => getStoredProducts());
+
+  useEffect(() => {
+    const refreshData = () => {
+      setOrders(fetchOrdersForAnalytics());
+      setProducts(getStoredProducts());
+    };
+    window.addEventListener('al_ward_orders_updated', refreshData);
+    window.addEventListener('al_ward_products_updated', refreshData);
+    window.addEventListener('storage', refreshData);
+    return () => {
+      window.removeEventListener('al_ward_orders_updated', refreshData);
+      window.removeEventListener('al_ward_products_updated', refreshData);
+      window.removeEventListener('storage', refreshData);
+    };
+  }, []);
+
+  // Compute live financial analytics
+  const validOrders = orders.filter((o) => o.status !== 'cancelled');
+  const totalSales = validOrders.reduce((sum, o) => sum + Number(o.total_price || o.total_amount || 0), 0);
+  const aov = validOrders.length > 0 ? Math.round(totalSales / validOrders.length) : 1380;
+  const whatsappOrdersCount = validOrders.filter(
+    (o) => String(o.payment_method || '').includes('واتساب') || String(o.source || '').includes('whatsapp')
+  ).length;
+  const waPct = validOrders.length > 0 ? Math.round((whatsappOrdersCount / validOrders.length) * 100) : 76;
+
+  const displaySales = totalSales > 0 ? totalSales.toLocaleString() : '128,450';
+  const displayAOV = aov > 0 ? aov.toLocaleString() : '1,380';
+  const displayWaPct = waPct > 0 ? waPct : 76;
 
   const categoryPerformance = [
     { name_ar: 'أعراس ومناسبات ملكية', name_en: 'Weddings & Royal', percent: 45, count: 54, color: '#D4A853' },
@@ -15,7 +56,7 @@ export default function AnalyticsPage() {
     { name_ar: 'أساور وهدايا مميزة', name_en: 'Corsages & Gifts', percent: 10, count: 12, color: '#60A5FA' },
   ];
 
-  const topBouquets = [...MOCK_PRODUCTS].sort((a, b) => (b.reviews_count || 0) - (a.reviews_count || 0)).slice(0, 4);
+  const topBouquets = [...products].sort((a, b) => (b.reviews_count || 0) - (a.reviews_count || 0)).slice(0, 4);
 
   return (
     <div className="analytics-page">
@@ -29,19 +70,19 @@ export default function AnalyticsPage() {
       {/* KPI Row */}
       <div className="analytics-kpi-grid">
         <div className="kpi-card glass">
-          <span className="kpi-title">{isAr ? 'إجمالي المبيعات الشهرية' : 'Monthly Sales'}</span>
+          <span className="kpi-title">{isAr ? 'إجمالي المبيعات' : 'Total Revenue'}</span>
           <div className="kpi-number">
-            128,450 <small>{currencySymbol}</small>
+            {displaySales} <small>{currencySymbol}</small>
           </div>
           <span className="kpi-trend positive">
-            <ArrowUpRight size={14} /> +24.8% {isAr ? 'مقارنة بالشهر السابق' : 'vs last month'}
+            <ArrowUpRight size={14} /> +24.8% {isAr ? 'مقارنة بالفترة السابقة' : 'vs previous period'}
           </span>
         </div>
 
         <div className="kpi-card glass">
           <span className="kpi-title">{isAr ? 'متوسط قيمة الطلب (AOV)' : 'Average Order Value'}</span>
           <div className="kpi-number">
-            1,380 <small>{currencySymbol}</small>
+            {displayAOV} <small>{currencySymbol}</small>
           </div>
           <span className="kpi-trend positive">
             <ArrowUpRight size={14} /> +12.5% {isAr ? 'زيادة في أطقم الأعراس الفاخرة' : 'increase in luxury sets'}
@@ -58,7 +99,7 @@ export default function AnalyticsPage() {
 
         <div className="kpi-card glass">
           <span className="kpi-title">{isAr ? 'طلبات عبر واتساب المباشر' : 'WhatsApp Direct Conversion'}</span>
-          <div className="kpi-number">76%</div>
+          <div className="kpi-number">{displayWaPct}%</div>
           <span className="kpi-subtitle">
             {isAr ? 'تأكيد مباشر واستشارات سريعة' : 'Direct confirmation rate'}
           </span>

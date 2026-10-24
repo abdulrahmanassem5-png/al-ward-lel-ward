@@ -5,7 +5,7 @@ const AuthContext = createContext(null);
 const DEFAULT_ADMIN = {
   id: 'admin-1',
   email: 'admin@alward.com',
-  name: 'أحمد السعيد',
+  name: 'أحمد السعيد (مدير المتجر)',
   role: 'admin',
   avatar: '🌹',
 };
@@ -41,16 +41,9 @@ export function AuthProvider({ children }) {
     const cleanPass = (password || '').trim();
 
     if (cleanEmail === 'admin@alward.com' && cleanPass === savedPass) {
-      const authUser = {
-        id: 'admin-1',
-        email: 'admin@alward.com',
-        name: 'أحمد السعيد (مدير المتجر)',
-        role: 'admin',
-        avatar: '🌹',
-      };
-      setUser(authUser);
-      localStorage.setItem('alward_auth_user', JSON.stringify(authUser));
-      return { success: true, user: authUser };
+      setUser(DEFAULT_ADMIN);
+      localStorage.setItem('alward_auth_user', JSON.stringify(DEFAULT_ADMIN));
+      return { success: true, user: DEFAULT_ADMIN };
     } else {
       throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
     }

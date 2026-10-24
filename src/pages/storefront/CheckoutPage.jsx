@@ -3,19 +3,19 @@ import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
-import { CURRENCY, STORE_INFO } from '../../config/constants.js';
+import { CURRENCY } from '../../config/constants.js';
 import { deductMaterialsForOrder } from '../../utils/recipeInventoryManager.js';
+import {
+  getStoreSettings,
+  isValidEgyptianPhone,
+  formatPhoneForWhatsApp,
+} from '../../utils/storeSettingsManager.js';
 import confetti from 'canvas-confetti';
 import {
   CheckCircle,
   ShieldCheck,
   CreditCard,
-  Truck,
-  Building,
-  Calendar,
-  Clock,
   User,
-  Phone,
   MapPin,
   MessageCircle,
   ArrowRight,
@@ -34,9 +34,13 @@ export default function CheckoutPage() {
   const ArrowIcon = isAr ? ArrowLeft : ArrowRight;
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
 
+  const storeSettings = getStoreSettings();
+  const freeThreshold = Number(storeSettings.freeDeliveryThreshold) || 300;
+  const standardFee = Number(storeSettings.deliveryFee) || 25;
+
   const discountAmount = location.state?.discountAmount || 0;
   const appliedPromo = location.state?.appliedPromo || '';
-  const shippingFee = totalPrice >= 300 ? 0 : 25;
+  const shippingFee = totalPrice >= freeThreshold ? 0 : standardFee;
   const finalPayable = Math.max(0, totalPrice - discountAmount + shippingFee);
 
   // Form states
@@ -73,9 +77,33 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!isValidEgyptianPhone(formData.senderPhone)) {
+      showError(
+        isAr
+          ? 'يرجى إدخال رقم هاتف مصري صحيح للمشتري (مثال: 01012345678)'
+          : 'Please provide a valid Egyptian phone number (e.g. 01012345678)'
+      );
+      return;
+    }
+
     if (!formData.district.trim()) {
       showError(isAr ? 'يرجى كتابة الحي أو عنوان التوصيل' : 'Please provide delivery address/district');
       return;
+    }
+
+    if (formData.isGift) {
+      if (!formData.recipientName.trim()) {
+        showError(isAr ? 'يرجى كتابة اسم مستلم الهدية' : 'Please provide recipient name');
+        return;
+      }
+      if (!isValidEgyptianPhone(formData.recipientPhone)) {
+        showError(
+          isAr
+            ? 'يرجى إدخال رقم هاتف مصري صحيح لمستلم الهدية (مثال: 01012345678)'
+            : 'Please provide a valid Egyptian phone number for the recipient'
+        );
+        return;
+      }
     }
 
     // Generate Order ID
@@ -91,6 +119,7 @@ export default function CheckoutPage() {
       district: formData.district,
       total_price: finalPayable,
       status: 'new',
+      source: 'storefront_checkout',
       items: items.map((i) => ({
         id: i.id,
         name: isAr ? i.name_ar : i.name_en,
@@ -102,6 +131,7 @@ export default function CheckoutPage() {
       recipient_name: formData.recipientName,
       recipient_phone: formData.recipientPhone,
       payment_method: formData.paymentMethod,
+      is_inventory_deducted: false,
     };
 
     // Deduct raw materials from inventory and calculate exact financials
@@ -113,6 +143,7 @@ export default function CheckoutPage() {
 
     const existingOrders = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
     localStorage.setItem('al_ward_orders', JSON.stringify([newOrderRecord, ...existingOrders]));
+    window.dispatchEvent(new CustomEvent('al_ward_orders_updated', { detail: { order: newOrderRecord } }));
 
     // Trigger celebration confetti
     confetti({
@@ -164,7 +195,8 @@ export default function CheckoutPage() {
       ? `━━━━━━━━━━━━━━━━━━━━━━━━━\nأرجو التكرم من مستشار التنسيق الملكي بتأكيد بدء قطف الزهور وتجهيز الموكب، مع فائق التقدير والمودة لمقامكم الرفيع.`
       : `━━━━━━━━━━━━━━━━━━━━━━━━━\nKindly have the master florist confirm preparation. Thank you!`;
 
-    window.open(`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+    const targetPhone = formatPhoneForWhatsApp(storeSettings.whatsapp);
+    window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   if (orderSubmitted) {
@@ -420,6 +452,39 @@ export default function CheckoutPage() {
                 </label>
               ))}
             </div>
+
+            {formData.paymentMethod === 'bank' && (
+              <div className="bank-transfer-details-box animate-fade-in" style={{
+                marginTop: '16px',
+                padding: '16px',
+                background: 'rgba(212, 168, 83, 0.08)',
+                border: '1px solid rgba(212, 168, 83, 0.3)',
+                borderRadius: '12px'
+              }}>
+                <h4 style={{ color: 'var(--gold-light)', margin: '0 0 10px', fontSize: '0.95rem' }}>
+                  {isAr ? '✦ بيانات التحويل الرقمي للدار:' : '✦ Atelier Digital Transfer Accounts:'}
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem', color: '#E5E7EB' }}>
+                  <div>
+                    <strong style={{ color: '#F3F4F6' }}>{isAr ? 'عنوان إنستاباي (InstaPay): ' : 'InstaPay: '}</strong>
+                    <code style={{ background: 'rgba(0,0,0,0.4)', padding: '2px 8px', borderRadius: '4px', color: '#FCD34D' }}>
+                      {storeSettings.instapay_account || 'alward@instapay'}
+                    </code>
+                  </div>
+                  <div>
+                    <strong style={{ color: '#F3F4F6' }}>{isAr ? 'فودافون كاش / محفظة ذكية: ' : 'Vodafone Cash: '}</strong>
+                    <code style={{ background: 'rgba(0,0,0,0.4)', padding: '2px 8px', borderRadius: '4px', color: '#FCD34D' }}>
+                      {storeSettings.vodafone_cash_number || '01221120701'}
+                    </code>
+                  </div>
+                  <small style={{ color: '#9CA3AF', marginTop: '4px' }}>
+                    {isAr
+                      ? 'يرجى إرسال لقطة شاشة لإشعار التحويل عبر واتساب بعد الضغط على تأكيد الطلب.'
+                      : 'Kindly send transfer receipt screenshot via WhatsApp after confirming your order.'}
+                  </small>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -26,15 +26,29 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
+  // Sync document direction and language with active i18n language
   useEffect(() => {
-    setMobileOpen(false);
-  }, [location.pathname]);
+    if (typeof document !== 'undefined') {
+      const currentLang = isAr ? 'ar' : 'en';
+      const currentDir = isAr ? 'rtl' : 'ltr';
+      document.documentElement.dir = currentDir;
+      document.documentElement.lang = currentLang;
+      document.body.dir = currentDir;
+    }
+  }, [isAr]);
 
   const toggleLang = useCallback(() => {
     const next = isAr ? 'en' : 'ar';
     i18n.changeLanguage(next);
-    document.body.dir = next === 'ar' ? 'rtl' : 'ltr';
+    if (typeof document !== 'undefined') {
+      const nextDir = next === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.dir = nextDir;
+      document.documentElement.lang = next;
+      document.body.dir = nextDir;
+    }
+    try {
+      localStorage.setItem('i18nextLng', next);
+    } catch {}
   }, [isAr, i18n]);
 
   const links = [

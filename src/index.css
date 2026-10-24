@@ -15,3 +15,17 @@
   color: var(--text-primary);
   overflow-x: hidden;
 }
+
+.storefront-main-content {
+  min-height: 80vh;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .storefront-main-content {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+}
+

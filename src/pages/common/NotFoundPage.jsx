@@ -4,7 +4,7 @@ import { ShoppingBag, ArrowRight, ArrowLeft } from 'lucide-react';
 import './NotFoundPage.css';
 
 export default function NotFoundPage() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
   const ArrowIcon = isAr ? ArrowLeft : ArrowRight;
 

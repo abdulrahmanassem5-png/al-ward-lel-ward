@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { STORE_INFO, CURRENCY } from '../../config/constants.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { QRCodeSVG } from 'qrcode.react';
@@ -14,7 +13,13 @@ import {
   resetSocialQRsToDefault,
 } from '../../utils/socialLinksManager.js';
 import {
-  Settings,
+  getStoreSettings,
+  saveStoreSettings,
+  downloadERPBackupFile,
+  restoreERPBackupData,
+  ERP_RESTORED_EVENT,
+} from '../../utils/storeSettingsManager.js';
+import {
   Save,
   Store,
   Truck,
@@ -27,14 +32,18 @@ import {
   Trash2,
   ExternalLink,
   QrCode,
-  Check,
   RefreshCw,
   Sparkles,
-  Globe,
   Link as LinkIcon,
   X,
+  CreditCard,
   Eye,
   CheckCircle,
+  Download,
+  Upload,
+  Database,
+  FileJson,
+  ShieldCheck,
 } from 'lucide-react';
 import './SettingsPage.css';
 
@@ -50,28 +59,8 @@ export default function SettingsPage() {
     confirmPassword: '',
   });
 
-  // Store profile & settings with local storage persistence
-  const [settings, setSettings] = useState(() => {
-    try {
-      const stored = localStorage.getItem('al_ward_store_settings');
-      if (stored) return JSON.parse(stored);
-    } catch {}
-    return {
-      name_ar: STORE_INFO.name_ar,
-      name_en: STORE_INFO.name_en,
-      tagline_ar: STORE_INFO.tagline_ar,
-      whatsapp: STORE_INFO.whatsapp,
-      email: STORE_INFO.email,
-      address_ar: STORE_INFO.address_ar,
-      deliveryFee: 25,
-      freeDeliveryThreshold: 300,
-      vatRate: 15,
-      currencySymbol: CURRENCY.symbol_ar,
-      enableSameDay: true,
-      enableWhatsAppDirect: true,
-      soundNotifications: true,
-    };
-  });
+  // Store profile & settings with unified storeSettingsManager
+  const [settings, setSettings] = useState(() => getStoreSettings());
 
   // Social QRs state
   const [socialQRs, setSocialQRs] = useState(() => getStoredSocialQRs());
@@ -105,6 +94,75 @@ export default function SettingsPage() {
     return () => window.removeEventListener('al_ward_social_qrs_updated', handleSync);
   }, []);
 
+  // ERP Backup & Restore state
+  const [isExporting, setIsExporting] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const backupFileInputRef = useRef(null);
+
+  // Sync state if an ERP restore occurs
+  useEffect(() => {
+    const handleERPRestored = () => {
+      setSettings(getStoreSettings());
+      setSocialQRs(getStoredSocialQRs());
+    };
+    window.addEventListener(ERP_RESTORED_EVENT, handleERPRestored);
+    return () => window.removeEventListener(ERP_RESTORED_EVENT, handleERPRestored);
+  }, []);
+
+  const handleExportBackup = () => {
+    setIsExporting(true);
+    try {
+      const result = downloadERPBackupFile();
+      showSuccess(
+        isAr
+          ? `تم تصدير نسخة الـ ERP بنجاح (${result.filename}) 🌹`
+          : `ERP backup exported successfully (${result.filename}) 🌹`
+      );
+    } catch (err) {
+      console.error(err);
+      showError(isAr ? 'فشل تصدير النسخة الاحتياطية' : 'Failed to export ERP backup');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleTriggerRestore = () => {
+    backupFileInputRef.current?.click();
+  };
+
+  const handleFileSelected = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsRestoring(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result;
+        const res = restoreERPBackupData(content);
+        setSettings(getStoreSettings());
+        setSocialQRs(getStoredSocialQRs());
+        showSuccess(
+          isAr
+            ? `تمت استعادة بيانات الـ ERP بنجاح (${res.restoredCount} قطاع بيانات تم تحديثه) ✦`
+            : `ERP backup restored successfully (${res.restoredCount} data sections updated) ✦`
+        );
+      } catch (err) {
+        console.error(err);
+        showError(err.message || (isAr ? 'فشلت استعادة النسخة الاحتياطية' : 'Failed to restore backup'));
+      } finally {
+        setIsRestoring(false);
+        if (e.target) e.target.value = '';
+      }
+    };
+    reader.onerror = () => {
+      showError(isAr ? 'خطأ في قراءة ملف النسخة الاحتياطية' : 'Failed to read backup file');
+      setIsRestoring(false);
+      if (e.target) e.target.value = '';
+    };
+    reader.readAsText(file);
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setSettings((prev) => ({
@@ -116,7 +174,7 @@ export default function SettingsPage() {
   const handleSave = (e) => {
     e?.preventDefault();
     try {
-      localStorage.setItem('al_ward_store_settings', JSON.stringify(settings));
+      saveStoreSettings(settings);
       saveStoredSocialQRs(socialQRs);
       showSuccess(
         isAr
@@ -662,12 +720,49 @@ export default function SettingsPage() {
             </div>
 
             <div className="settings-field-group">
+              <label>{isAr ? 'الحد الأدنى للشحن الملكي المبرد VIP (ج.م)' : 'VIP Chilled Delivery Threshold (EGP)'}</label>
+              <input
+                type="number"
+                name="vipChilledDeliveryThreshold"
+                value={settings.vipChilledDeliveryThreshold ?? 1500}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="settings-field-group">
               <label>{isAr ? 'نسبة ضريبة القيمة المضافة (VAT %)' : 'VAT Rate (%)'}</label>
               <input
                 type="number"
                 name="vatRate"
                 value={settings.vatRate}
                 onChange={handleChange}
+              />
+            </div>
+
+            <h3 className="section-title" style={{ marginTop: '24px' }}>
+              <CreditCard size={18} className="sec-icon" />
+              {isAr ? 'حسابات الدفع الرقمي والتحويل' : 'Digital Payment & Wallet Accounts'}
+            </h3>
+
+            <div className="settings-field-group">
+              <label>{isAr ? 'حساب أو عنوان إنستاباي (InstaPay Address)' : 'InstaPay Account / Address'}</label>
+              <input
+                type="text"
+                name="instapay_account"
+                value={settings.instapay_account || ''}
+                onChange={handleChange}
+                placeholder="alward@instapay"
+              />
+            </div>
+
+            <div className="settings-field-group">
+              <label>{isAr ? 'رقم محفظة فودافون كاش / المحافظ الذكية' : 'Vodafone Cash / Smart Wallet Phone'}</label>
+              <input
+                type="text"
+                name="vodafone_cash_number"
+                value={settings.vodafone_cash_number || ''}
+                onChange={handleChange}
+                placeholder="01221120701"
               />
             </div>
 
@@ -778,6 +873,112 @@ export default function SettingsPage() {
             </button>
           </div>
         </form>
+
+        {/* ========================================================
+            ROYAL ERP BACKUP & RESTORE JSON ENGINE SECTION
+            ======================================================== */}
+        <div className="settings-card full-width-card glass-luxury-card erp-backup-manager-card">
+          <div className="erp-backup-header">
+            <div className="social-badge">
+              <Database size={14} />
+              <span>{isAr ? 'محرك الأمان السحابي والنسخ الاحتياطي' : 'Cloud Data Safety Engine'}</span>
+            </div>
+            <h2 className="erp-backup-section-title">
+              <FileJson size={22} className="gold-icon" />
+              <span>{isAr ? 'النسخ الاحتياطي واستعادة بيانات النظام (ERP Data Backup & Restore) ✦' : 'ERP Data Backup & Restore Engine ✦'}</span>
+            </h2>
+            <p className="social-section-desc">
+              {isAr
+                ? 'تأمين كامل وشامل لكافة بيانات المنصة المحلية (الطلبات، المواد الخام، وصفات البوكيهات، المنتجات، العروض الترويجية، العملاء، وإعدادات المتجر). يمكنك تصدير نسخة JSON مشفرة ومنظمة وحفظها بجهازك، أو استعادتها فوراً في أي وقت.'
+                : 'Instant engine to protect and export all store & ERP data into a timestamped JSON file (Orders, Inventory, Recipes, Products, Offers, Customers, Settings).'}
+            </p>
+          </div>
+
+          <div className="erp-backup-actions-grid">
+            {/* Export Card */}
+            <div className="erp-backup-action-box export-box">
+              <div className="action-box-info">
+                <div className="action-box-icon gold-glow">
+                  <Download size={24} />
+                </div>
+                <div>
+                  <h4 className="action-box-title">
+                    {isAr ? 'تصدير نسخة احتياطية كاملة (Export ERP JSON)' : 'Export Full ERP Backup (JSON)'}
+                  </h4>
+                  <p className="action-box-hint">
+                    {isAr
+                      ? 'يقوم بتجميع كافة السجلات في ملف واحد مؤرخ باسم elward_erp_backup_YYYY-MM-DD.json وتحميله فوراً لجهازك.'
+                      : 'Bundles all store and ERP data into a timestamped JSON file and downloads it immediately.'}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleExportBackup}
+                disabled={isExporting}
+                className="btn-backup-action btn-export-erp"
+              >
+                <Download size={16} />
+                <span>
+                  {isExporting
+                    ? (isAr ? 'جاري تجهيز وتصدير النسخة...' : 'Exporting...')
+                    : (isAr ? 'تصدير نسخة احتياطية كاملة (.json) ✦' : 'Export Full ERP Backup (.json) ✦')}
+                </span>
+              </button>
+            </div>
+
+            {/* Restore Card */}
+            <div className="erp-backup-action-box restore-box">
+              <div className="action-box-info">
+                <div className="action-box-icon emerald-glow">
+                  <Upload size={24} />
+                </div>
+                <div>
+                  <h4 className="action-box-title">
+                    {isAr ? 'استيراد واستعادة البيانات (Restore ERP JSON)' : 'Restore ERP Data (JSON)'}
+                  </h4>
+                  <p className="action-box-hint">
+                    {isAr
+                      ? 'يقرأ ملف الـ JSON المرفوع، يتحقق من سلامة هيكليته، ويستعيد كافة البيانات في النظام مع تحديث فوري لكافة السجلات.'
+                      : 'Uploads and validates a JSON backup, restoring all records into the ERP with immediate real-time synchronization.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Hidden File Input for Restore */}
+              <input
+                type="file"
+                ref={backupFileInputRef}
+                onChange={handleFileSelected}
+                accept=".json,application/json"
+                style={{ display: 'none' }}
+              />
+
+              <button
+                type="button"
+                onClick={handleTriggerRestore}
+                disabled={isRestoring}
+                className="btn-backup-action btn-restore-erp"
+              >
+                <Upload size={16} />
+                <span>
+                  {isRestoring
+                    ? (isAr ? 'جاري الفحص والاستعادة...' : 'Restoring...')
+                    : (isAr ? 'رفع واستعادة نسخة احتياطية (.json) ✦' : 'Restore ERP Data (.json) ✦')}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div className="erp-backup-meta-footer">
+            <ShieldCheck size={16} style={{ color: '#2ECC71', flexShrink: 0 }} />
+            <span>
+              {isAr
+                ? 'حماية مشددة: يتم فحص سلامة هيكل الملف والتأكد من مطابقة المفاتيح قبل الاستعادة، وتحديث واجهات النظام والطلبات بشكل تفاعلي لحظي.'
+                : 'Safe Validation: Structure integrity is verified before restoring, with real-time UI synchronization.'}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

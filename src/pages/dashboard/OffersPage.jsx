@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MOCK_PRODUCTS, CURRENCY } from '../../config/constants.js';
+import { CURRENCY } from '../../config/constants.js';
+import { getStoredProducts } from '../../utils/productStorageManager.js';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import confetti from 'canvas-confetti';
 import {
@@ -11,9 +12,7 @@ import {
   Edit3,
   Sparkles,
   Calendar,
-  Percent,
   CheckCircle2,
-  XCircle,
   AlertCircle,
   X,
   Zap,
@@ -68,11 +67,23 @@ export default function OffersPage() {
 
   const [showModal, setShowModal] = useState(false);
   const [editingOfferId, setEditingOfferId] = useState(null);
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  const [productsList, setProductsList] = useState(() => getStoredProducts());
+
+  useEffect(() => {
+    const handleUpdate = () => setProductsList(getStoredProducts());
+    window.addEventListener('al_ward_products_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('al_ward_products_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   // Form State
   const [formState, setFormState] = useState({
-    productId: MOCK_PRODUCTS[0]?.id || '1',
+    productId: productsList[0]?.id || '1',
     salePrice: '',
     discountPercent: 15,
     badgeText: 'تخفيض ملكي لفترة محدودة ✦',
@@ -106,10 +117,10 @@ export default function OffersPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showModal]);
 
-  const selectedProduct = MOCK_PRODUCTS.find((p) => p.id === formState.productId) || MOCK_PRODUCTS[0];
+  const selectedProduct = productsList.find((p) => p.id === formState.productId) || productsList[0];
 
   const handleOpenCreate = () => {
-    const defaultProduct = MOCK_PRODUCTS[0];
+    const defaultProduct = productsList[0] || { id: '1', price: 1000 };
     const originalPrice = defaultProduct.price;
     const calcSalePrice = Math.round(originalPrice * 0.85);
 
@@ -143,7 +154,7 @@ export default function OffersPage() {
   };
 
   const handleProductChange = (productId) => {
-    const p = MOCK_PRODUCTS.find((item) => item.id === productId);
+    const p = productsList.find((item) => item.id === productId);
     if (!p) return;
     const original = p.price;
     const sale = Math.round(original * (1 - formState.discountPercent / 100));
@@ -165,14 +176,14 @@ export default function OffersPage() {
     }));
   };
 
-  const handlePresetDuration = (hours) => {
+  const handlePresetDuration = useCallback((hours) => {
     const expiry = new Date(Date.now() + hours * 3600 * 1000).toISOString().slice(0, 16);
     setFormState((prev) => ({
       ...prev,
       durationHours: hours,
       customExpiry: expiry,
     }));
-  };
+  }, []);
 
   const handleSaveOffer = (e) => {
     e.preventDefault();
@@ -443,7 +454,7 @@ export default function OffersPage() {
                     value={formState.productId}
                     onChange={(e) => handleProductChange(e.target.value)}
                   >
-                    {MOCK_PRODUCTS.map((p) => (
+                    {productsList.map((p) => (
                       <option key={p.id} value={p.id}>
                         {isAr ? p.name_ar : p.name_en} ({p.price} {currencySymbol})
                       </option>

@@ -80,7 +80,20 @@ export function saveStoredProduct(productData) {
       updatedList = [productData, ...products];
     }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
+    } catch (quotaErr) {
+      if (
+        quotaErr.name === 'QuotaExceededError' ||
+        quotaErr.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+        quotaErr.code === 22 ||
+        quotaErr.code === 1014
+      ) {
+        console.error('LocalStorage Quota Exceeded while saving product:', quotaErr);
+        throw new Error('مساحة التخزين المحلية للمتصفح ممتلئة! يرجى تقليل حجم الصور أو استخدام روابط خارجية.');
+      }
+      throw quotaErr;
+    }
 
     // Also update legacy overrides for price if applicable
     try {
@@ -104,7 +117,7 @@ export function saveStoredProduct(productData) {
     return updatedList;
   } catch (err) {
     console.error('Failed to save product:', err);
-    return getStoredProducts();
+    throw err;
   }
 }
 
@@ -130,6 +143,63 @@ export function deleteStoredProduct(id) {
     console.error('Failed to delete product:', err);
     return getStoredProducts();
   }
+}
+
+/**
+ * High-efficiency browser image compression to WebP / JPEG using Canvas
+ * Prevents LocalStorage QuotaExceededError by keeping images under ~120KB
+ */
+export function compressImageToWebP(file, maxWidth = 1200, quality = 0.80) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) {
+      return reject(new Error('الملف المحدد ليس صورة صالحة'));
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return reject(new Error('Failed to create canvas context'));
+      }
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Try webp first, fallback to jpeg if unsupported
+      try {
+        const webpData = canvas.toDataURL('image/webp', quality);
+        if (webpData.startsWith('data:image/webp')) {
+          return resolve(webpData);
+        }
+      } catch {}
+
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+
+    img.onerror = (err) => {
+      URL.revokeObjectURL(objectUrl);
+      reject(err);
+    };
+
+    img.src = objectUrl;
+  });
 }
 
 /**

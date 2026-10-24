@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MOCK_PRODUCTS, CURRENCY } from '../../config/constants.js';
+import { CURRENCY } from '../../config/constants.js';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { getRawMaterialsInventory } from '../../utils/recipeInventoryManager.js';
+import { getStoredProducts } from '../../utils/productStorageManager.js';
 import confetti from 'canvas-confetti';
 import {
   Boxes,
@@ -11,104 +12,12 @@ import {
   CheckCircle2,
   XCircle,
   Search,
-  RefreshCw,
   X,
   Flower2,
-  Package,
   Layers,
-  ArrowUpDown,
-  ShieldAlert,
   Sparkles,
 } from 'lucide-react';
 import './InventoryPage.css';
-
-// Default raw materials inventory for high-end floristry atelier
-const DEFAULT_RAW_MATERIALS = [
-  {
-    id: 'RAW-1',
-    name_ar: 'سيقان بيوني هولندي أبيض ناصع',
-    name_en: 'Dutch Royal White Peony Stems',
-    quantity: 120,
-    unit_ar: 'ساق',
-    unit_en: 'stem',
-    reorder_level: 25,
-    cost_per_unit: 45,
-    supplier_ar: 'أمستردام للزهور النادرة (هولندا)',
-    supplier_en: 'Amsterdam Flora Co.',
-  },
-  {
-    id: 'RAW-2',
-    name_ar: 'ورود كيتو الإكوادورية المخملية الحمراء',
-    name_en: 'Ecuadorian Velvet Crimson Roses',
-    quantity: 240,
-    unit_ar: 'ساق',
-    unit_en: 'stem',
-    reorder_level: 40,
-    cost_per_unit: 35,
-    supplier_ar: 'مزارع أنديز كيتو (الإكوادور)',
-    supplier_en: 'Andes Quito Exotics',
-  },
-  {
-    id: 'RAW-3',
-    name_ar: 'أعقاد لؤلؤ عاجي مطرز للأعراس',
-    name_en: 'Bridal Natural Pearl Trims',
-    quantity: 35,
-    unit_ar: 'عقد',
-    unit_en: 'trim',
-    reorder_level: 10,
-    cost_per_unit: 65,
-    supplier_ar: 'دار المجوهرات والتطريز',
-    supplier_en: 'Atelier Pearls Co.',
-  },
-  {
-    id: 'RAW-4',
-    name_ar: 'صناديق خشب أرز تذكارية مخصصة',
-    name_en: 'Personalized Keepsake Cedar Boxes',
-    quantity: 18,
-    unit_ar: 'صندوق',
-    unit_en: 'box',
-    reorder_level: 15,
-    cost_per_unit: 180,
-    supplier_ar: 'ورشة النجارة والأصداف الملكية',
-    supplier_en: 'Royal Carpentry Atelier',
-  },
-  {
-    id: 'RAW-5',
-    name_ar: 'ورق قطني فرنسي معتق لبطاقات الإهداء',
-    name_en: 'French Cotton Parchment Sheets',
-    quantity: 350,
-    unit_ar: 'بطاقة',
-    unit_en: 'card',
-    reorder_level: 50,
-    cost_per_unit: 12,
-    supplier_ar: 'مطبعة الأوراق الملكية',
-    supplier_en: 'Parisian Stationery House',
-  },
-  {
-    id: 'RAW-6',
-    name_ar: 'قوالب شمع قرمزي مذهب للأختام',
-    name_en: 'Royal Crimson Wax Seal Blocks',
-    quantity: 45,
-    unit_ar: 'قالب',
-    unit_en: 'block',
-    reorder_level: 12,
-    cost_per_unit: 25,
-    supplier_ar: 'دار الصياغة والأختام',
-    supplier_en: 'Royal Seal Atelier',
-  },
-  {
-    id: 'RAW-7',
-    name_ar: 'أشرطة حرير وساتان عريض مذهب الحواف',
-    name_en: 'Gold-Trimmed Satin Ribbon Rolls',
-    quantity: 8,
-    unit_ar: 'رول (50م)',
-    unit_en: 'roll',
-    reorder_level: 10,
-    cost_per_unit: 95,
-    supplier_ar: 'مصنع الحرير الدمشقي الفاخر',
-    supplier_en: 'Damascene Silk Mills',
-  },
-];
 
 export default function InventoryPage() {
   const { i18n } = useTranslation();
@@ -121,6 +30,21 @@ export default function InventoryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
+  // Dynamic products list from stored products atelier
+  const [productsList, setProductsList] = useState(() => getStoredProducts());
+
+  useEffect(() => {
+    const handleProductsUpdate = () => {
+      setProductsList(getStoredProducts());
+    };
+    window.addEventListener('al_ward_products_updated', handleProductsUpdate);
+    window.addEventListener('storage', handleProductsUpdate);
+    return () => {
+      window.removeEventListener('al_ward_products_updated', handleProductsUpdate);
+      window.removeEventListener('storage', handleProductsUpdate);
+    };
+  }, []);
+
   // 1. Ready Bouquets Stock (persisted in localStorage)
   const [bouquetsStock, setBouquetsStock] = useState(() => {
     try {
@@ -129,9 +53,10 @@ export default function InventoryPage() {
     } catch {
       // fallback
     }
-    // initialize from MOCK_PRODUCTS
+    // initialize from stored products
     const initial = {};
-    MOCK_PRODUCTS.forEach((p) => {
+    const prods = getStoredProducts();
+    prods.forEach((p) => {
       initial[p.id] = p.stock_quantity ?? 12;
     });
     return initial;
@@ -279,7 +204,7 @@ export default function InventoryPage() {
   };
 
   // Filtered lists based on search
-  const filteredBouquets = MOCK_PRODUCTS.filter((p) => {
+  const filteredBouquets = productsList.filter((p) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase().trim();
     return (
@@ -300,8 +225,8 @@ export default function InventoryPage() {
   });
 
   // Metrics
-  const lowBouquetCount = MOCK_PRODUCTS.filter((p) => (bouquetsStock[p.id] ?? 10) <= 3).length;
-  const outOfStockBouquetCount = MOCK_PRODUCTS.filter((p) => (bouquetsStock[p.id] ?? 10) === 0).length;
+  const lowBouquetCount = productsList.filter((p) => (bouquetsStock[p.id] ?? 10) <= 3).length;
+  const outOfStockBouquetCount = productsList.filter((p) => (bouquetsStock[p.id] ?? 10) === 0).length;
   const lowRawCount = rawInventory.filter((i) => i.quantity <= i.reorder_level).length;
 
   return (
@@ -336,7 +261,7 @@ export default function InventoryPage() {
         >
           <Flower2 size={18} />
           <span>{isAr ? 'مخزون البوكيهات والتحف الجاهزة' : 'Ready Bouquets Stock'}</span>
-          <span className="inv-tab-count">({MOCK_PRODUCTS.length})</span>
+          <span className="inv-tab-count">({productsList.length})</span>
           {lowBouquetCount > 0 && <span className="inv-tab-alert-badge">{lowBouquetCount}</span>}
         </button>
 
@@ -360,7 +285,7 @@ export default function InventoryPage() {
               : (isAr ? 'إجمالي المواد الخام المسجلة' : 'Total Raw Materials')}
           </span>
           <span className="stat-number">
-            {activeTab === 'bouquets' ? MOCK_PRODUCTS.length : rawInventory.length}
+            {activeTab === 'bouquets' ? productsList.length : rawInventory.length}
           </span>
         </div>
 

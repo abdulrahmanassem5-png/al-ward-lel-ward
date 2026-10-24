@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
-import { CURRENCY, STORE_INFO } from '../../config/constants.js';
+import { CURRENCY } from '../../config/constants.js';
+import { getStoreSettings, formatPhoneForWhatsApp } from '../../utils/storeSettingsManager.js';
+import { deductMaterialsForOrder } from '../../utils/recipeInventoryManager.js';
 import {
   ShoppingBag,
   Trash2,
@@ -18,7 +20,7 @@ import {
 import './CartPage.css';
 
 export default function CartPage() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const { items, updateQuantity, removeItem, clearCart, totalPrice, totalItems } = useCart();
   const { showSuccess, showError } = useNotification();
@@ -26,6 +28,10 @@ export default function CartPage() {
   const isAr = i18n.language === 'ar';
   const ArrowIcon = isAr ? ArrowLeft : ArrowRight;
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
+
+  const storeSettings = getStoreSettings();
+  const freeThreshold = Number(storeSettings.freeDeliveryThreshold) || 300;
+  const standardFee = Number(storeSettings.deliveryFee) || 25;
 
   const [promoInput, setPromoInput] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -47,13 +53,17 @@ export default function CartPage() {
   };
 
   const discountAmount = Math.round((totalPrice * discountPercent) / 100);
-  const shippingFee = totalPrice >= 300 ? 0 : 25;
+  const shippingFee = totalPrice >= freeThreshold ? 0 : standardFee;
   const finalPayable = Math.max(0, totalPrice - discountAmount + shippingFee);
 
   const handleWhatsAppCartOrder = () => {
+    const orderId = `ORD-WA-${Date.now().toString().slice(-6)}`;
+
     let message = isAr
       ? `مرحباً بكم دار الورد للورد 🌹✨\nأود اعتماد موكب إهداء ملكي من حقيبة الهدايا:\n━━━━━━━━━━━━━━━━━━\n`
       : `Hello Al-Ward Lel-Ward Atelier 🌹✨\nI would like to place an order from my Royal Gift Bag:\n━━━━━━━━━━━━━━━━━━\n`;
+
+    message += `رقم الطلب المرجعي: ${orderId}\n`;
 
     items.forEach((item, idx) => {
       const name = isAr ? item.name_ar : item.name_en;
@@ -77,7 +87,58 @@ export default function CartPage() {
     message += `إجمالي القيمة الفاخرة: ${finalPayable} ${currencySymbol}\n\n`;
     message += `أرجو التكرم باعتماد التجهيز وتأكيد موعد الموكب، شاكرين لكم حسن ذوقكم!`;
 
-    window.open(`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+    // Create official ERP order record
+    const newOrder = {
+      id: orderId,
+      customer_name: isAr ? 'عميل واتساب (حقيبة الهدايا)' : 'WhatsApp Bag Client',
+      customer_phone: storeSettings.whatsapp || '01221120701',
+      delivery_address: isAr ? 'طلب سريع عبر واتساب - يتم التأكيد في المحادثة' : 'WhatsApp Express - Pending chat confirmation',
+      delivery_date: new Date().toISOString().split('T')[0],
+      delivery_time: '18:00 - 21:00',
+      status: 'new',
+      source: 'whatsapp_cart',
+      items: items.map((it) => ({
+        product_id: it.id,
+        product_name_ar: it.name_ar,
+        product_name_en: it.name_en,
+        quantity: it.quantity,
+        unit_price: it.price,
+        selectedSize: it.selectedSize,
+        giftNote: it.giftNote,
+        includeQR: it.includeQR,
+      })),
+      subtotal: totalPrice,
+      discount: discountAmount,
+      delivery_fee: shippingFee,
+      total_amount: finalPayable,
+      payment_method: 'whatsapp',
+      payment_status: 'pending',
+      promo_code: appliedPromo || null,
+      created_at: new Date().toISOString(),
+      is_inventory_deducted: false,
+    };
+
+    try {
+      const existingOrders = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
+      existingOrders.unshift(newOrder);
+      localStorage.setItem('al_ward_orders', JSON.stringify(existingOrders));
+      window.dispatchEvent(new CustomEvent('al_ward_orders_updated', { detail: { order: newOrder } }));
+      
+      // Automatically deduct recipe ingredients for the recorded order
+      deductMaterialsForOrder(newOrder);
+    } catch (err) {
+      console.error('Failed to register WhatsApp order in ERP:', err);
+    }
+
+    showSuccess(
+      isAr
+        ? `تم تسجيل طلبك برقم (${orderId}) في المنصة، ويتم تحويلك للواتساب الآن ✨`
+        : `Order (${orderId}) registered in system, opening WhatsApp now ✨`
+    );
+
+    const whatsappPhone = formatPhoneForWhatsApp(storeSettings.whatsapp);
+    window.open(`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`, '_blank');
+    clearCart();
   };
 
   if (items.length === 0) {
@@ -250,7 +311,7 @@ export default function CartPage() {
                 <span>{isAr ? 'رسوم التوصيل' : 'Delivery Fee'}</span>
                 <span>
                   {shippingFee === 0 ? (
-                    <span className="free-shipping">{isAr ? 'موكب مبرّد مجاني (للطلبات +300 ج.م)' : 'Free Climate-Controlled (+300 EGP)'}</span>
+                    <span className="free-shipping">{isAr ? `موكب مبرّد مجاني (للطلبات +${freeThreshold} ج.م)` : `Free Climate-Controlled (+${freeThreshold} EGP)`}</span>
                   ) : (
                     `${shippingFee} ${currencySymbol}`
                   )}

@@ -3,16 +3,22 @@ import './FloatingParticles.css';
 
 export default function FloatingParticles({ count = 25 }) {
   const particles = useMemo(() => {
-    return Array.from({ length: count }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 4 + 2,
-      duration: Math.random() * 12 + 8,
-      delay: Math.random() * 6,
-      opacity: Math.random() * 0.4 + 0.1,
-      isGold: Math.random() > 0.4,
-    }));
+    return Array.from({ length: count }, (_, i) => {
+      const seed1 = ((i * 9301 + 49297) % 233280) / 233280;
+      const seed2 = (((i + 7) * 9301 + 49297) % 233280) / 233280;
+      const seed3 = (((i + 13) * 9301 + 49297) % 233280) / 233280;
+      const seed4 = (((i + 19) * 9301 + 49297) % 233280) / 233280;
+      return {
+        id: i,
+        x: seed1 * 100,
+        y: seed2 * 100,
+        size: seed3 * 4 + 2,
+        duration: seed4 * 12 + 8,
+        delay: seed1 * 6,
+        opacity: seed2 * 0.4 + 0.1,
+        isGold: seed3 > 0.4,
+      };
+    });
   }, [count]);
 
   return (

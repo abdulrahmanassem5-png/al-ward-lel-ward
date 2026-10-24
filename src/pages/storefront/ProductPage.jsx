@@ -1,10 +1,10 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { useQuickCheckout } from '../../context/QuickCheckoutContext.jsx';
-import { MOCK_PRODUCTS, CURRENCY, STORE_INFO } from '../../config/constants.js';
+import { MOCK_PRODUCTS, CURRENCY } from '../../config/constants.js';
 import {
   getStoredProductById,
   getStoredProducts,
@@ -20,20 +20,15 @@ import {
   Star,
   ShieldCheck,
   Truck,
-  Heart,
   Share2,
   Check,
   QrCode,
   Sparkles,
-  ArrowRight,
-  ArrowLeft,
-  Info,
   Clock,
   Zap,
   Film,
   Play,
   Image as ImageIcon,
-  Video,
 } from 'lucide-react';
 import './ProductPage.css';
 
@@ -45,24 +40,34 @@ export default function ProductPage() {
   const { showSuccess, showInfo } = useNotification();
 
   const isAr = i18n.language === 'ar';
-  const ArrowIcon = isAr ? ArrowLeft : ArrowRight;
 
-  const [productsVersion, setProductsVersion] = useState(0);
-
-  // Live listener to any updates made from dashboard or other tabs
-  useEffect(() => {
-    const handleSync = () => setProductsVersion((v) => v + 1);
-    window.addEventListener('al_ward_products_updated', handleSync);
-    return () => window.removeEventListener('al_ward_products_updated', handleSync);
-  }, []);
-
-  const product = useMemo(() => {
+  const [product, setProduct] = useState(() => {
     return (
       getStoredProductById(id) ||
       MOCK_PRODUCTS.find((p) => String(p.id) === String(id)) ||
       MOCK_PRODUCTS[0]
     );
-  }, [id, productsVersion]);
+  });
+  const [allProducts, setAllProducts] = useState(() => getStoredProducts());
+
+  // Live listener to any updates made from dashboard or other tabs
+  useEffect(() => {
+    const handleSync = () => {
+      setProduct(
+        getStoredProductById(id) ||
+        MOCK_PRODUCTS.find((p) => String(p.id) === String(id)) ||
+        MOCK_PRODUCTS[0]
+      );
+      setAllProducts(getStoredProducts());
+    };
+    handleSync();
+    window.addEventListener('al_ward_products_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('al_ward_products_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, [id]);
 
   const [activeMediaMode, setActiveMediaMode] = useState('image'); // 'image' | 'video'
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -89,43 +94,57 @@ export default function ProductPage() {
         const storedOffers = localStorage.getItem('al_ward_offers');
         if (storedOffers) {
           const offers = JSON.parse(storedOffers);
-          const currentOffer = offers.find(
-            (o) => o.productId === product.id && o.status === 'active'
-          );
-          if (currentOffer) {
-            const end = new Date(currentOffer.endDate).getTime();
-            const now = Date.now();
-            const diff = end - now;
+          if (Array.isArray(offers)) {
+            const currentOffer = offers.find(
+              (o) => String(o.productId) === String(product.id) && (o.isActive === true || o.status === 'active')
+            );
+            if (currentOffer) {
+              const expiryDate = currentOffer.expiresAt || currentOffer.endDate;
+              const end = expiryDate ? new Date(expiryDate).getTime() : 0;
+              const now = Date.now();
+              const diff = end - now;
 
-            if (diff > 0) {
-              const hours = Math.floor(diff / (1000 * 60 * 60));
-              const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-              const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-              const pad = (n) => String(n).padStart(2, '0');
-              setTimeLeft(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
-              setActiveOffer(currentOffer);
+              if (diff > 0) {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                const pad = (n) => String(n).padStart(2, '0');
+                setTimeLeft(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
+                setActiveOffer(currentOffer);
+              } else {
+                setActiveOffer(null);
+                setTimeLeft(null);
+              }
             } else {
               setActiveOffer(null);
               setTimeLeft(null);
             }
-          } else {
-            setActiveOffer(null);
-            setTimeLeft(null);
           }
         }
       } catch (err) {
         console.error('Error reading offers:', err);
       }
 
-      // 2. Check Stock
+      // 2. Check Stock (Safely handles both Object Map { [id]: qty } and Array of items)
       try {
         const storedStock = localStorage.getItem('al_ward_products_stock');
         if (storedStock) {
-          const stockList = JSON.parse(storedStock);
-          const found = stockList.find((item) => item.id === product.id);
-          if (found) {
-            setStockInfo({ stock: found.stock, status: found.status });
+          const parsedStock = JSON.parse(storedStock);
+          let qty = product.stock_quantity ?? 12;
+
+          if (Array.isArray(parsedStock)) {
+            const found = parsedStock.find((item) => String(item.id) === String(product.id));
+            if (found) qty = found.stock ?? found.quantity ?? qty;
+          } else if (parsedStock && typeof parsedStock === 'object') {
+            if (parsedStock[product.id] !== undefined) {
+              qty = Number(parsedStock[product.id]);
+            }
           }
+
+          setStockInfo({
+            stock: qty,
+            status: qty <= 0 ? 'out' : qty <= 3 ? 'low' : 'good',
+          });
         }
       } catch (err) {
         console.error('Error reading stock:', err);
@@ -135,7 +154,7 @@ export default function ProductPage() {
     updateOfferAndStock();
     const interval = setInterval(updateOfferAndStock, 1000);
     return () => clearInterval(interval);
-  }, [product.id]);
+  }, [product.id, product.stock_quantity]);
 
   const name = isAr ? product.name_ar : product.name_en;
   const desc = isAr ? product.description_ar : product.description_en;
@@ -199,10 +218,7 @@ export default function ProductPage() {
     }
   };
 
-  const relatedProducts = useMemo(() => {
-    const all = getStoredProducts();
-    return all.filter((p) => String(p.id) !== String(product.id)).slice(0, 3);
-  }, [product.id, productsVersion]);
+  const relatedProducts = allProducts.filter((p) => String(p.id) !== String(product.id)).slice(0, 3);
 
   const images = product.images && product.images.length > 0 ? product.images : ['/images/bouquet-save-the-date.jpg'];
   const activeImage = images[activeImageIndex] || images[0];

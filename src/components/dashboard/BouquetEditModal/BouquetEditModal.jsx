@@ -4,6 +4,7 @@ import { CATEGORIES, CURRENCY } from '../../../config/constants.js';
 import { useNotification } from '../../../context/NotificationContext.jsx';
 import {
   saveStoredProduct,
+  compressImageToWebP,
   readFileAsDataURL,
   parseVideoUrl,
 } from '../../../utils/productStorageManager.js';
@@ -14,14 +15,10 @@ import {
   Film,
   Plus,
   Trash2,
-  CheckCircle,
   Upload,
   Link as LinkIcon,
   Crown,
-  Eye,
-  Layers,
   DollarSign,
-  AlertCircle,
   Video,
 } from 'lucide-react';
 import './BouquetEditModal.css';
@@ -73,7 +70,7 @@ export default function BouquetEditModal({ product, isNew = false, isOpen, onClo
 
   if (!isOpen) return null;
 
-  // Handle uploading images from local device
+  // Handle uploading and auto-compressing images from local device to WebP
   const handleImageFilesUpload = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -81,13 +78,19 @@ export default function BouquetEditModal({ product, isNew = false, isOpen, onClo
     try {
       setIsUploadingImage(true);
       const convertedDataUrls = await Promise.all(
-        files.map((file) => readFileAsDataURL(file))
+        files.map(async (file) => {
+          try {
+            return await compressImageToWebP(file, 1200, 0.82);
+          } catch {
+            return await readFileAsDataURL(file);
+          }
+        })
       );
       setImages((prev) => [...prev, ...convertedDataUrls]);
       showSuccess(
         isAr
-          ? `تمت إضافة ${files.length} صور للبوكيه بنجاح`
-          : `Added ${files.length} images successfully`
+          ? `تم ضغط وحفظ ${files.length} صور للبوكيه بصيغة WebP خفيفة بنجاح`
+          : `Added and compressed ${files.length} images successfully`
       );
     } catch (err) {
       console.error('Error reading images:', err);
@@ -126,10 +129,21 @@ export default function BouquetEditModal({ product, isNew = false, isOpen, onClo
     showSuccess(isAr ? 'تم تعيين الصورة كصورة رئيسية للبوكيه ✦' : 'Set as primary cover image');
   };
 
-  // Handle uploading video file from device
+  // Handle uploading video file from device with strict size limit to prevent QuotaExceeded
   const handleVideoFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Strict 2MB size limit for directly uploaded videos in LocalStorage
+    if (file.size > 2 * 1024 * 1024) {
+      showError(
+        isAr
+          ? 'حجم الفيديو كبير جداً للتخزين المحلي (أقصى حد 2MB). يرجى وضع رابط يوتيوب أو فيميو بدلاً من ذلك لحفظ سرعة المتجر 🎬'
+          : 'Video file too large (>2MB). Please paste a YouTube or Vimeo link instead.'
+      );
+      if (videoFileInputRef.current) videoFileInputRef.current.value = '';
+      return;
+    }
 
     try {
       setIsUploadingVideo(true);
@@ -212,16 +226,21 @@ export default function BouquetEditModal({ product, isNew = false, isOpen, onClo
       video_url: videoUrl.trim() || null,
     };
 
-    saveStoredProduct(updatedData);
-    setIsSaving(false);
-    showSuccess(
-      isCreateMode
-        ? (isAr ? `تمت إضافة ونشر تحفة «${nameAr}» بنجاح! 🌹` : `Bouquet "${nameAr}" created & published! 🌹`)
-        : (isAr ? `تم تحديث وحفظ بيانات وصور وفيديو «${nameAr}» بنجاح! 🌹` : `Bouquet "${nameAr}" updated successfully!`)
-    );
+    try {
+      saveStoredProduct(updatedData);
+      setIsSaving(false);
+      showSuccess(
+        isCreateMode
+          ? (isAr ? `تمت إضافة ونشر تحفة «${nameAr}» بنجاح! 🌹` : `Bouquet "${nameAr}" created & published! 🌹`)
+          : (isAr ? `تم تحديث وحفظ بيانات وصور وفيديو «${nameAr}» بنجاح! 🌹` : `Bouquet "${nameAr}" updated successfully!`)
+      );
 
-    if (onSaveSuccess) onSaveSuccess(updatedData);
-    onClose();
+      if (onSaveSuccess) onSaveSuccess(updatedData);
+      onClose();
+    } catch (saveErr) {
+      setIsSaving(false);
+      showError(saveErr.message || (isAr ? 'فشل حفظ الباقة في مساحة التخزين' : 'Failed to save bouquet'));
+    }
   };
 
   return (

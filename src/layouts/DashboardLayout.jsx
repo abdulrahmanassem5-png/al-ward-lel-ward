@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext.jsx';
 import {
   LayoutDashboard,
   ShoppingBag,
-  PackageCheck,
   Flower2,
   Boxes,
   TrendingUp,
@@ -16,8 +15,6 @@ import {
   Menu,
   X,
   Bell,
-  Sparkles,
-  ChevronRight,
   Users,
   Settings,
   Tag,
@@ -25,7 +22,7 @@ import {
 import './DashboardLayout.css';
 
 export default function DashboardLayout() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);

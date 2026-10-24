@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CURRENCY, STORE_INFO } from '../../../config/constants.js';
+import { CURRENCY } from '../../../config/constants.js';
 import { useNotification } from '../../../context/NotificationContext.jsx';
 import { deductMaterialsForOrder } from '../../../utils/recipeInventoryManager.js';
+import {
+  getStoreSettings,
+  isValidEgyptianPhone,
+  formatPhoneForWhatsApp,
+} from '../../../utils/storeSettingsManager.js';
 import confetti from 'canvas-confetti';
 import {
   X,
@@ -12,7 +17,6 @@ import {
   User,
   Phone,
   Gift,
-  Clock,
   ShieldCheck,
   Check,
   Truck,
@@ -25,11 +29,17 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
   const isAr = i18n.language === 'ar';
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
 
+  const storeSettings = getStoreSettings();
+  const vipThreshold = Number(storeSettings.vipChilledDeliveryThreshold) || 1500;
+
   const [selectedSize, setSelectedSize] = useState('medium');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     district: 'القاهرة - التجمع الخامس',
+    isGift: false,
+    recipientName: '',
+    recipientPhone: '',
     giftNote: '',
     deliveryTime: 'evening',
   });
@@ -63,7 +73,31 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
       return;
     }
 
-    const orderId = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+    if (!isValidEgyptianPhone(formData.phone)) {
+      showError(
+        isAr
+          ? 'يرجى إدخال رقم هاتف مصري صحيح (مثال: 01012345678)'
+          : 'Please enter a valid Egyptian mobile number (e.g. 01012345678)'
+      );
+      return;
+    }
+
+    if (formData.isGift) {
+      if (!formData.recipientName.trim()) {
+        showError(isAr ? 'يرجى كتابة اسم مستلم الهدية' : 'Please provide recipient name');
+        return;
+      }
+      if (formData.recipientPhone.trim() && !isValidEgyptianPhone(formData.recipientPhone)) {
+        showError(
+          isAr
+            ? 'يرجى إدخال رقم هاتف مصري صحيح لمستلم الهدية (مثال: 01012345678)'
+            : 'Please enter a valid Egyptian mobile number for the recipient'
+        );
+        return;
+      }
+    }
+
+    const orderId = `ORD-QK-${Math.floor(100000 + Math.random() * 900000)}`;
 
     // Save order in localStorage so it dynamically shows in Admin Dashboard!
     const newOrderRecord = {
@@ -74,6 +108,7 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
       district: formData.district,
       total_price: finalPrice,
       status: 'new',
+      source: 'quick_checkout_drawer',
       items: [
         {
           id: product.id,
@@ -84,10 +119,11 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
         },
       ],
       created_at: new Date().toISOString(),
-      is_gift: !!formData.giftNote.trim(),
-      recipient_name: formData.giftNote.trim() ? (isAr ? 'مستلم الهدية' : 'Gift Recipient') : '',
-      recipient_phone: '',
+      is_gift: formData.isGift || !!formData.giftNote.trim(),
+      recipient_name: formData.recipientName.trim() || (formData.giftNote.trim() ? (isAr ? 'مستلم الهدية' : 'Gift Recipient') : ''),
+      recipient_phone: formData.recipientPhone.trim(),
       payment_method: 'طلب سريع عبر واتساب (Quick WhatsApp)',
+      is_inventory_deducted: false,
     };
 
     try {
@@ -98,9 +134,11 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
 
     try {
       const existing = JSON.parse(localStorage.getItem('al_ward_orders') || '[]');
-      localStorage.setItem('al_ward_orders', JSON.stringify([newOrderRecord, ...existing]));
-    } catch {
-      // ignore
+      existing.unshift(newOrderRecord);
+      localStorage.setItem('al_ward_orders', JSON.stringify(existing));
+      window.dispatchEvent(new CustomEvent('al_ward_orders_updated', { detail: { order: newOrderRecord } }));
+    } catch (err) {
+      console.error('Error storing quick checkout order:', err);
     }
 
     // Trigger celebration confetti
@@ -145,6 +183,7 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
         `• رقم الهاتف: ${formData.phone}\n` +
         `• وجهة موكب التوصيل: ${formData.district}\n` +
         `• موعد التسليم المفضل: ${deliveryTimeName}\n` +
+        (formData.isGift && formData.recipientName ? `• إهداء خاص للمستلم: ${formData.recipientName} (${formData.recipientPhone || 'بدون هاتف'})\n` : '') +
         (formData.giftNote.trim() ? `• بطاقة الإهداء الملكية: «${formData.giftNote.trim()}»\n` : '') +
         `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
         `أرجو التكرم من مستشار التنسيق الملكي بتأكيد بدء قطف الزهور وتجهيز الموكب، مع فائق الامتنان والتقدير لمقامكم الرفيع.`
@@ -162,11 +201,13 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
         `• Phone: ${formData.phone}\n` +
         `• Delivery Destination: ${formData.district}\n` +
         `• Preferred Delivery Window: ${deliveryTimeName}\n` +
+        (formData.isGift && formData.recipientName ? `• Surprise Gift to: ${formData.recipientName} (${formData.recipientPhone || 'N/A'})\n` : '') +
         (formData.giftNote.trim() ? `• Dedication Note: «${formData.giftNote.trim()}»\n` : '') +
         `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
         `Kindly have the master florist confirm preparation. Thank you for your distinguished service.`;
 
-    window.open(`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
+    const targetPhone = formatPhoneForWhatsApp(storeSettings.whatsapp);
+    window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(text)}`, '_blank');
 
     showSuccess(isAr ? 'تم إرسال تفاصيل طلبك الملكي لمستشار الزهور عبر واتساب! 🌹' : 'Order sent to florist on WhatsApp! 🌹');
     onClose();
@@ -215,17 +256,17 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
             <span className="free-shipping-label">
               <Truck size={15} className="truck-gold-icon" />
               <span>
-                {finalPrice >= 1500
+                {finalPrice >= vipThreshold
                   ? (isAr ? 'تهانينا! هديتك مؤهلة لموكب التوصيل المبرّد VIP مجاناً 🚚✨' : 'Eligible for Complimentary VIP Chilled Delivery! 🚚✨')
-                  : (isAr ? `متبقي ${1500 - finalPrice} ${currencySymbol} للتأهل لموكب التوصيل المبرّد المجاني` : `Add ${1500 - finalPrice} ${currencySymbol} for Free VIP Delivery`)}
+                  : (isAr ? `متبقي ${vipThreshold - finalPrice} ${currencySymbol} للتأهل لموكب التوصيل المبرّد المجاني` : `Add ${vipThreshold - finalPrice} ${currencySymbol} for Free VIP Delivery`)}
               </span>
             </span>
-            <span className="free-shipping-pct">{Math.min(100, Math.round((finalPrice / 1500) * 100))}%</span>
+            <span className="free-shipping-pct">{Math.min(100, Math.round((finalPrice / vipThreshold) * 100))}%</span>
           </div>
           <div className="free-shipping-track">
             <div
               className="free-shipping-fill"
-              style={{ width: `${Math.min(100, Math.round((finalPrice / 1500) * 100))}%` }}
+              style={{ width: `${Math.min(100, Math.round((finalPrice / vipThreshold) * 100))}%` }}
             />
           </div>
         </div>
@@ -411,6 +452,48 @@ export default function QuickCheckoutDrawer({ product, isOpen, onClose }) {
               </div>
             </div>
           </div>
+
+          {/* Gift Toggle & Recipient Fields */}
+          <div className="drawer-field-group">
+            <label className="gift-toggle-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: 'var(--gold-light)', fontSize: '0.9rem' }}>
+              <input
+                type="checkbox"
+                checked={formData.isGift}
+                onChange={(e) => setFormData((prev) => ({ ...prev, isGift: e.target.checked }))}
+              />
+              <span>{isAr ? '🎁 إرسال الباقة كهدية لشخص آخر (تحديد المستلم)' : '🎁 Send as a surprise gift to someone else'}</span>
+            </label>
+          </div>
+
+          {formData.isGift && (
+            <div className="drawer-recipient-fields animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: 'rgba(212, 168, 83, 0.05)', padding: '12px', borderRadius: '10px', border: '1px solid rgba(212, 168, 83, 0.2)', marginBottom: '16px' }}>
+              <div className="drawer-field-group" style={{ margin: 0 }}>
+                <label className="drawer-label">{isAr ? 'اسم المستلم *' : 'Recipient Name *'}</label>
+                <div className="drawer-input-wrap">
+                  <User size={16} className="input-icon" />
+                  <input
+                    type="text"
+                    placeholder={isAr ? 'اسم المستلم الكريم' : 'Recipient name'}
+                    value={formData.recipientName}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, recipientName: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="drawer-field-group" style={{ margin: 0 }}>
+                <label className="drawer-label">{isAr ? 'رقم هاتف المستلم (اختياري / للتنسيق)' : 'Recipient Phone (Optional)'}</label>
+                <div className="drawer-input-wrap">
+                  <Phone size={16} className="input-icon" />
+                  <input
+                    type="tel"
+                    placeholder="01xxxxxxxxx"
+                    value={formData.recipientPhone}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, recipientPhone: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Submit Direct Button */}
           <button type="submit" className="btn-drawer-whatsapp">

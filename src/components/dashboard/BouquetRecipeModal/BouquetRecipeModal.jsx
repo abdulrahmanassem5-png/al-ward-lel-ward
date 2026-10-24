@@ -18,8 +18,6 @@ import {
   AlertCircle,
   CheckCircle2,
   Scissors,
-  Bookmark,
-  Layers,
 } from 'lucide-react';
 import './BouquetRecipeModal.css';
 
@@ -35,7 +33,20 @@ export default function BouquetRecipeModal({
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
 
   // Inventory available
-  const inventory = useMemo(() => getRawMaterialsInventory(), [isOpen]);
+  const [inventory, setInventory] = useState(() => getRawMaterialsInventory());
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleUpdate = () => {
+      setInventory(getRawMaterialsInventory());
+    };
+    window.addEventListener('al_ward_raw_inventory_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('al_ward_raw_inventory_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, [isOpen]);
 
   // Local state for bouquet recipe and pricing
   const [recipeItems, setRecipeItems] = useState(() => {

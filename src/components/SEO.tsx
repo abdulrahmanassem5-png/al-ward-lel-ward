@@ -38,7 +38,7 @@ export default function SEO({
       let element = document.querySelector(selector) as HTMLMetaElement | null;
       if (!element) {
         element = document.createElement('meta');
-        const [attrName, attrVal] = selector.replace(/[\[\]']/g, '').split('=');
+        const [attrName, attrVal] = selector.replace(/[[\]']/g, '').split('=');
         element.setAttribute(attrName, attrVal);
         document.head.appendChild(element);
       }

@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MOCK_PRODUCTS, CATEGORIES, CURRENCY } from '../../config/constants.js';
+import { CURRENCY } from '../../config/constants.js';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import {
   getBouquetRecipe,
@@ -15,30 +15,28 @@ import {
 } from '../../utils/productStorageManager.js';
 import BouquetRecipeModal from '../../components/dashboard/BouquetRecipeModal/BouquetRecipeModal.jsx';
 import BouquetEditModal from '../../components/dashboard/BouquetEditModal/BouquetEditModal.jsx';
-import { Plus, Trash2, X, Sparkles, Scissors, TrendingUp, Layers, Edit3, Film, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Scissors, Edit3, Film, Image as ImageIcon } from 'lucide-react';
 import './ProductsPage.css';
 
 export default function ProductsPage() {
-  const { t, i18n } = useTranslation();
-  const { showSuccess, showError } = useNotification();
+  const { i18n } = useTranslation();
+  const { showSuccess } = useNotification();
   const isAr = i18n.language === 'ar';
   const currencySymbol = isAr ? CURRENCY.symbol_ar : CURRENCY.symbol_en;
 
   // Initialize products with stored products
   const [products, setProducts] = useState(() => getStoredProducts());
 
-  const [recipesVersion, setRecipesVersion] = useState(0);
   const [selectedBouquetForRecipe, setSelectedBouquetForRecipe] = useState(null);
   const [editingBouquet, setEditingBouquet] = useState(null);
   const [isCreatingBouquet, setIsCreatingBouquet] = useState(false);
 
-  // Calculate live financials map for all bouquets
-  const bouquetFinancialsMap = useMemo(() => {
+  const computeFinancials = useCallback((prods) => {
     const inv = getRawMaterialsInventory();
     const recipes = getBouquetRecipes();
     const map = {};
 
-    products.forEach((p) => {
+    prods.forEach((p) => {
       const rec = recipes[p.id] || getBouquetRecipe(p.id);
       const fin = calculateBouquetFinancials(rec, p.sale_price || p.price, inv);
       map[p.id] = {
@@ -48,23 +46,28 @@ export default function ProductsPage() {
     });
 
     return map;
-  }, [products, recipesVersion]);
+  }, []);
+
+  const [bouquetFinancialsMap, setBouquetFinancialsMap] = useState(() => computeFinancials(products));
 
   // Listen to product, recipe or inventory changes
   useEffect(() => {
-    const handleSync = () => setRecipesVersion((v) => v + 1);
-    const handleProductsSync = () => {
-      setProducts(getStoredProducts());
+    const handleSync = () => {
+      const prods = getStoredProducts();
+      setProducts(prods);
+      setBouquetFinancialsMap(computeFinancials(prods));
     };
     window.addEventListener('al_ward_bouquet_recipes_updated', handleSync);
     window.addEventListener('al_ward_raw_inventory_updated', handleSync);
-    window.addEventListener('al_ward_products_updated', handleProductsSync);
+    window.addEventListener('al_ward_products_updated', handleSync);
+    window.addEventListener('storage', handleSync);
     return () => {
       window.removeEventListener('al_ward_bouquet_recipes_updated', handleSync);
       window.removeEventListener('al_ward_raw_inventory_updated', handleSync);
-      window.removeEventListener('al_ward_products_updated', handleProductsSync);
+      window.removeEventListener('al_ward_products_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
     };
-  }, []);
+  }, [computeFinancials]);
 
   const handleToggleStock = (id) => {
     const p = products.find((item) => item.id === id);
@@ -81,11 +84,10 @@ export default function ProductsPage() {
     showSuccess(isAr ? 'تم حذف البوكيه من الكتالوج' : 'Bouquet deleted from catalog');
   };
 
-  const handleRecipeSaveSuccess = ({ productId, price, financials }) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === productId ? { ...p, price, sale_price: null } : p))
-    );
-    setRecipesVersion((v) => v + 1);
+  const handleRecipeSaveSuccess = ({ price, financials }) => {
+    const updated = getStoredProducts();
+    setProducts(updated);
+    setBouquetFinancialsMap(computeFinancials(updated));
     showSuccess(
       isAr
         ? `تم تحديث تركيبة البوكيه واعتماد السعر (${price} ${currencySymbol}) بصافي ربح ${financials.net_profit} ${currencySymbol} 🌹`

@@ -1,0 +1,224 @@
+.royal-loading-fallback {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #171215 0%, #0d0a0c 60%, #060506 100%);
+  color: #F5E6C8;
+  overflow: hidden;
+  direction: rtl;
+  user-select: none;
+  animation: royalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes royalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Ambient royal background halos */
+.royal-loading-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.royal-halo {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: haloPulse 4s ease-in-out infinite alternate;
+}
+
+.royal-halo-gold {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, #D4AF37 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.royal-halo-rose {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, #8B1E3F 0%, transparent 70%);
+  top: 45%;
+  left: 48%;
+  transform: translate(-50%, -50%);
+  animation-delay: -2s;
+}
+
+@keyframes haloPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 0.18;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.32;
+  }
+}
+
+/* Main Container */
+.royal-loading-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2.5rem 2rem;
+  max-width: 460px;
+}
+
+/* Luxury Emblem & Pulsing Ring */
+.royal-spinner-stage {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.8rem;
+}
+
+.royal-spin-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #D4AF37;
+  border-right-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+  animation: royalSpin 1.6s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+}
+
+.royal-spin-ring-inner {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(243, 229, 171, 0.5);
+  animation: royalSpinReverse 4s linear infinite;
+}
+
+@keyframes royalSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes royalSpinReverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.royal-emblem-icon {
+  position: relative;
+  z-index: 3;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(20, 16, 18, 0.85) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  color: #F3E5AB;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), inset 0 0 12px rgba(212, 175, 55, 0.2);
+  animation: emblemBreathe 2s ease-in-out infinite alternate;
+}
+
+@keyframes emblemBreathe {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+  }
+  100% {
+    transform: scale(1.06);
+    box-shadow: 0 0 28px rgba(212, 175, 55, 0.55);
+  }
+}
+
+/* Typography */
+.royal-loading-brand {
+  font-family: 'Amiri', 'Playfair Display', serif, system-ui;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #FFF6D6 0%, #D4AF37 50%, #AA820A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 0.4rem 0;
+  text-shadow: 0 2px 10px rgba(212, 175, 55, 0.2);
+}
+
+.royal-loading-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: #D4AF37;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 0.25rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.royal-loading-text {
+  font-size: 0.92rem;
+  color: rgba(245, 230, 200, 0.75);
+  margin: 0 0 1.2rem 0;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Progress bar shimmer line */
+.royal-progress-track {
+  width: 180px;
+  height: 3px;
+  background: rgba(212, 175, 55, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.royal-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, #F3E5AB, #D4AF37, transparent);
+  border-radius: 999px;
+  animation: royalTrackMove 1.5s ease-in-out infinite;
+}
+
+@keyframes royalTrackMove {
+  0% {
+    left: -50%;
+  }
+  100% {
+    left: 110%;
+  }
+}
